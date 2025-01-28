@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+
+}
+
+.icon, svg {
+    color: black;
+}
+
+body {
+    padding:0;
+    margin:0;
+}
+
+.heading {
+    @apply font-bold text-gray-800 leading-tight;
+}
+.heading-h1 {
+    @apply text-4xl md:text-5xl mb-6;
+}
+.heading-h2 {
+    @apply text-3xl md:text-4xl mb-5;
+}
+.heading-h3 {
+    @apply text-2xl md:text-3xl mb-4;
+}
+.heading-h4 {
+    @apply text-xl md:text-2xl mb-3;
+}
