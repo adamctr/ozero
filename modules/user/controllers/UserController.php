@@ -3,15 +3,12 @@
 class UserController {
     protected $user;
 
-    // Le constructeur prend maintenant l'ID de l'utilisateur en paramètre
     public function __construct($userId = null) {
         if ($userId !== null) {
             $userModel = new UserModel();
             $this->user = $userModel->getUserById($userId);
         }
     }
-
-
 
     public function update() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -23,21 +20,32 @@ class UserController {
 
     // Affiche le formulaire d'édition
     protected function showEditForm() {
-        /*$view = new EditUserView($this->user);
-        $view->show();*/
+        // Vous pouvez passer $this->user à la vue pour afficher les données de l'utilisateur
+        $view = new EditUserView($this->user);
+        $view->show();
     }
 
     // Traite la mise à jour de l'utilisateur
     protected function processUpdate() {
-        $name = $_POST['name'] ?? null;
+        $firstName = $_POST['firstName'] ?? null;
+        $lastName = $_POST['lastName'] ?? null;
+        $nickName = $_POST['nickName'] ?? null;
         $password = $_POST['password'] ?? null;
+
+        // Validation des champs (par exemple, vérifier que le mail est valide)
 
         // Mise à jour des informations dans la base de données
         $userModel = new UserModel();
-        $userModel->updateUser($this->user->getId(), $name, $password);
+        $userModel->updateUser(
+            $this->user->getUserId(),
+            $firstName,
+            $lastName,
+            $nickName,
+            $password
+        );
 
         // Redirection après la mise à jour
-        header('Location: /user/' . $this->user->getId());
+        header('Location: /user/' . $this->user->getUserId());
         exit();
     }
 
@@ -64,5 +72,4 @@ class UserController {
             Utils::sendResponse('error', "Une erreur est survenue lors de la suppression de l'utilisateur");
         }
     }
-
 }

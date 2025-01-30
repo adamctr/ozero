@@ -1,7 +1,4 @@
 <?php
-//
-// yueos_solage
-// solagecyrineadamfabio
 
 class Database {
     private static $instance = null;

@@ -43,8 +43,37 @@ class SessionController {
     // Méthode pour récupérer le nom d'utilisateur depuis le JWT
     public function getName() {
         try {
+            if (!isset($_COOKIE['auth_token'])) {
+                return null;
+            }
             $payload = $this->jwtHandler->decodeJWT($_COOKIE['auth_token']);
             return $payload['name'] ?? null;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    // Méthode pour récupérer le prénom d'utilisateur depuis le JWT
+    public function getFirstName() {
+        try {
+            if (!isset($_COOKIE['auth_token'])) {
+                return null;
+            }
+            $payload = $this->jwtHandler->decodeJWT($_COOKIE['auth_token']);
+            return $payload['firstName'] ?? null;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    // Méthode pour récupérer le prénom d'utilisateur depuis le JWT
+    public function getLastName() {
+        try {
+            if (!isset($_COOKIE['auth_token'])) {
+                return null;
+            }
+            $payload = $this->jwtHandler->decodeJWT($_COOKIE['auth_token']);
+            return $payload['lastName'] ?? null;
         } catch (Exception $e) {
             return null;
         }

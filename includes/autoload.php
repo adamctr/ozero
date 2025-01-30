@@ -27,7 +27,7 @@ class Autoloader {
 
         // Ajout des chemins dynamiques pour chaque module
         $modulesDir = __DIR__ . '/../modules/';
-        $moduleSubDirs = ['controllers', 'views', 'entities', 'models'];
+        $moduleSubDirs = ['controllers', 'views', 'entities', 'models', 'validators'];
 
         foreach ($baseDirs as $dir) {
             $file = $dir . $classPath . '.php';

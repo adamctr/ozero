@@ -132,7 +132,7 @@ class HomepageView extends View {
 
         <?php
         $contentPage = ob_get_clean();
-        (new PageView($contentPage, 'Accueil', "Ceci est la page d'accueil", ['debug']))->show();
+        (new FrontPageView($contentPage, 'Accueil', "Ceci est la page d'accueil", ['debug']))->show();
     }
 }
 ?>

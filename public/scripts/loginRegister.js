@@ -20,8 +20,9 @@ document.addEventListener('DOMContentLoaded', function() {
       })
         .then(response => response.json())
         .then(data => {
+          console.log(data);
 
-          if (data.success === 'success') {
+          if (data.status === 'success') {
             window.location.href = '/';
           }
           const messageContainer = document.getElementById('messageContainer');
@@ -42,6 +43,8 @@ document.addEventListener('DOMContentLoaded', function() {
       let email = document.getElementById('email').value;
       let password = document.getElementById('password').value;
       let username = document.getElementById('name').value;
+      let firstName = document.getElementById('firstName').value;
+      let lastName = document.getElementById('lastName').value;
 
       // Effectuer une requête AJAX pour l'inscription
       fetch('/register', {
@@ -50,12 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
           'Content-Type': 'application/x-www-form-urlencoded',
           'X-Requested-With': 'XMLHttpRequest'
         },
-        body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&name=${encodeURIComponent(username)}`
+        body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&name=${encodeURIComponent(username)}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`
       })
         .then(response => response.json())
         .then(data => {
 
-          if (data.success === 'success') {
+          if (data.status === 'success') {
             // Rediriger vers une autre page après inscription réussie
             window.location.href = '/';
           }
@@ -69,4 +72,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
   }
+
+  // Désactiver redirect lors du log-out
+  const logoutForm = document.getElementById('logoutForm');
+  if (logoutForm) {
+    logoutForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+    })
+  }
 });
+
+

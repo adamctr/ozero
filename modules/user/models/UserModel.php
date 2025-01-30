@@ -1,5 +1,6 @@
 <?php
 
+
 class UserModel
 {
     protected $db;
@@ -9,81 +10,174 @@ class UserModel
         $this->db = DataBase::getConnection();
     }
 
-    // Récupérer un utilisateur par son ID
-    public function getUserById($userId): ?UserEntity
+    /**
+     * Récupère un utilisateur par son ID
+     *
+     * @param int $userId
+     * @return UserEntity|null
+     */
+    public function getUserById(int $userId): ?UserEntity
     {
-        $statement = $this->db->prepare('SELECT id, name, email, password, role, image FROM users WHERE id = :id');
-        $statement->execute(['id' => $userId]);
-        $row = $statement->fetch(PDO::FETCH_OBJ);
-
-        return $row ? new UserEntity($row->id, $row->name, $row->email, $row->password, $row->role, $row->image) : null;
-    }
-
-    // Récupérer un utilisateur par son email
-    public function getUserByEmail($email): ?UserEntity
-    {
-        $sql = "SELECT id, name, email, password, role, image FROM users WHERE email = :email";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt = $this->db->prepare("SELECT * FROM users WHERE userId = :userId");
+        $stmt->bindParam(':userId', $userId, \PDO::PARAM_INT);
         $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_OBJ);
 
-        return $row ? new UserEntity($row->id, $row->name, $row->email, $row->password, $row->role, $row->image) : null;
+        $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if ($user) {
+            return $this->mapToEntity($user);
+        }
+        return null;
     }
 
-    // Créer un utilisateur
-    public function createUser(UserEntity $user): bool
+    /**
+     * Récupère un utilisateur par son email
+     *
+     * @param string $email
+     * @return UserEntity|null
+     */
+    public function getUserByEmail(string $email): ?UserEntity
     {
-        $hashedPassword = password_hash($user->getPassword(), PASSWORD_BCRYPT);
-        $sql = "INSERT INTO users (name, email, password, role, image) VALUES (:name, :email, :password, :role, :image)";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(':name', $user->getName(), PDO::PARAM_STR);
-        $stmt->bindValue(':email', $user->getEmail(), PDO::PARAM_STR);
-        $stmt->bindValue(':password', $hashedPassword, PDO::PARAM_STR);
-        $stmt->bindValue(':role', $user->getRole(), PDO::PARAM_STR);
-        $stmt->bindValue(':image', $user->getImage(), PDO::PARAM_STR);
+        try {
+            error_log("Searching user with email: $email"); // Log
+
+            $stmt = $this->db->prepare("SELECT * FROM users WHERE mail = :mail");
+            $stmt->bindParam(':mail', $email, \PDO::PARAM_STR);
+            $stmt->execute();
+
+            $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if ($user) {
+                return $this->mapToEntity($user);
+            }
+            return null;
+        } catch (\PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            throw new \RuntimeException("Erreur lors de la récupération de l'utilisateur.");
+        }
+    }
+
+
+    /**
+     * Ajoute un utilisateur à la base de données
+     *
+     * @param UserEntity $userEntity
+     * @return bool
+     */
+    public function addUser(UserEntity $userEntity): bool
+    {
+        $firstName = $userEntity->getFirstName();
+        $lastName = $userEntity->getLastName();
+        $nickName = $userEntity->getNickName();
+        $mail = $userEntity->getMail();
+        $password = $userEntity->getPassword();
+        $verified = false;
+        $roleId = 3;
+
+        // Debug pour vérifier les valeurs
+
+        // Préparer la requête
+        $stmt = $this->db->prepare("INSERT INTO users (firstName, lastName, nickName, mail, password, verified, roleId) 
+        VALUES (:firstName, :lastName, :nickName, :mail, :password, :verified, :roleId)");
+
+        return $stmt->execute([
+            ':firstName' => $firstName,
+            ':lastName' => $lastName,
+            ':nickName' => $nickName,
+            ':mail' => $mail,
+            ':password' => $password,
+            ':verified' => $verified,
+            ':roleId' => $roleId
+        ]);
+    }
+
+
+
+    /**
+     * Met à jour un utilisateur
+     *
+     * @param UserEntity $userEntity
+     * @return bool
+     */
+    public function updateUser(UserEntity $userEntity): bool
+    {
+        $firstName = $userEntity->getFirstName();
+        $lastName = $userEntity->getLastName();
+        $nickName = $userEntity->getNickName();
+        $password = $userEntity->getPassword();
+        $verified = $userEntity->isVerified();
+        $roleId = $userEntity->getRoleId();
+        $userId = $userEntity->getUserId();
+
+        $stmt = $this->db->prepare("UPDATE users SET firstName = :firstName, lastName = :lastName, 
+        nickName = :nickName, mail = :mail, password = :password, verified = :verified, roleId = :roleId 
+        WHERE userId = :userId");
+
+        $stmt->bindParam(':userId', $userId, \PDO::PARAM_INT);
+        $stmt->bindParam(':firstName', $firstName, \PDO::PARAM_STR);
+        $stmt->bindParam(':lastName', $lastName, \PDO::PARAM_STR);
+        $stmt->bindParam(':nickName', $nickName, \PDO::PARAM_STR);
+        $stmt->bindParam(':password', $password, \PDO::PARAM_STR);
+        $stmt->bindParam(':verified', $verified, \PDO::PARAM_BOOL);
+        $stmt->bindParam(':roleId', $roleId, \PDO::PARAM_INT);
 
         return $stmt->execute();
     }
 
-    // Mettre à jour un utilisateur
-    public function updateUser(UserEntity $user): bool
+    /**
+     * Supprime un utilisateur
+     *
+     * @param int $userId
+     * @return bool
+     */
+    public function deleteUser(int $userId): bool
     {
-        $hashedPassword = password_hash($user->getPassword(), PASSWORD_BCRYPT);
-        $sql = "UPDATE users SET name = :name, email = :email, password = :password, role = :role, image = :image WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(':name', $user->getName(), PDO::PARAM_STR);
-        $stmt->bindValue(':email', $user->getEmail(), PDO::PARAM_STR);
-        $stmt->bindValue(':password', $hashedPassword, PDO::PARAM_STR);
-        $stmt->bindValue(':role', $user->getRole(), PDO::PARAM_STR);
-        $stmt->bindValue(':image', $user->getImage(), PDO::PARAM_STR);
-        $stmt->bindValue(':id', $user->getId(), PDO::PARAM_INT);
+        $stmt = $this->db->prepare("DELETE FROM users WHERE userId = :userId");
+        $stmt->bindParam(':userId', $userId, \PDO::PARAM_INT);
 
         return $stmt->execute();
     }
 
-    // Supprimer un utilisateur
-    public function deleteUser($userId): bool
+    /**
+     * Mappe les données de la base de données vers une entité UserEntity
+     *
+     * @param array $data
+     * @return UserEntity
+     */
+    private function mapToEntity(array $data): UserEntity
     {
-        $sql = "DELETE FROM users WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
+        $userEntity = new UserEntity();
 
-        return $stmt->execute();
+        $userEntity->setUserId($data['userId'])
+            ->setFirstName($data['firstName'])
+            ->setLastName($data['lastName'])
+            ->setNickName($data['nickName'])
+            ->setMail($data['mail'])
+            ->setPassword($data['password'])
+            ->setVerified($data['verified'])
+            ->setCreatedAt(new \DateTime($data['createdAt']))
+            ->setRoleId($data['roleId']);
+
+        return $userEntity;
     }
 
-    // Récupérer tous les utilisateurs
-    public function getAllUsers(): array
+    /**
+     * Récupère tous les utilisateurs
+     *
+     * @return UserEntity[]
+     */
+    public function getUsers(): array
     {
-        $sql = "SELECT id, name, email, password, role, image FROM users";
-        $stmt = $this->db->query($sql);
+        $stmt = $this->db->prepare("SELECT * FROM users");
+        $stmt->execute();
 
-        $users = [];
-        while ($row = $stmt->fetch(PDO::FETCH_OBJ)) {
-            $users[] = new UserEntity($row->id, $row->name, $row->email, $row->password, $row->role, $row->image);
+        $users = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $userEntities = [];
+
+        foreach ($users as $user) {
+            $userEntities[] = $this->mapToEntity($user);
         }
 
-        return $users;
+        return $userEntities;
     }
 
 }

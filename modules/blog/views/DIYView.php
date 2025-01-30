@@ -64,7 +64,7 @@ class DIYView extends View {
 
         <?php
         $contentPage = ob_get_clean();
-        (new PageView($contentPage, 'DIY Écologiques', "Découvrez des astuces pour créer vos propres objets écologiques", ['diy']))->show();
+        (new FrontPageView($contentPage, 'DIY Écologiques', "Découvrez des astuces pour créer vos propres objets écologiques", ['diy']))->show();
     }
 }
 ?>

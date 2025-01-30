@@ -4,12 +4,12 @@ class AuthController {
 
     public function showLoginForm() {
         $view = new AuthView();
-        (new PageView($view->showLoginForm(), "Page de connexion", "Cette page sert pour l'utilisateur afin de se connecter", ['loginRegister']))->show();
+        (new FrontPageView($view->showLoginForm(), "Page de connexion", "Cette page sert pour l'utilisateur afin de se connecter", ['loginRegister']))->show();
     }
 
     public function showRegisterForm() {
         $view = new AuthView();
-        (new PageView($view->showRegisterForm(), "Page d'inscription", "Cette page sert pour l'utilisateur afin de s'inscrire au site", ['loginRegister']))->show();
+        (new FrontPageView($view->showRegisterForm(), "Page d'inscription", "Cette page sert pour l'utilisateur afin de s'inscrire au site", ['loginRegister']))->show();
     }
 
     public function login() {
@@ -22,15 +22,22 @@ class AuthController {
         $password = trim($_POST['password']) ?? '';
         $remember = trim($_POST['remember']) ?? '';
 
-        $validation = ValidatorController::login($email, $password);
-        if ($validation) {
-            $userModel = new UserModel();
-            $user = $userModel->getUserByEmail($email);
+        $validation = AuthValidator::login($email, $password);
 
+        if ($validation['status'] === 'error') {
+            Utils::sendResponse('error', $validation['message'], true);
+            return;
+        }
+
+        $userModel = new UserModel();
+        $user = $userModel->getUserByEmail($email);
+
+        if ($user) {
             $this->authenticateUser($user, $remember);
+        } else {
+            Utils::sendResponse('error', 'Utilisateur non trouvé', true);
         }
     }
-
     public function register() {
         if (!Utils::isAjax()) {
             Utils::sendResponse('error', 'Erreur lors de la requête AJAX');
@@ -38,18 +45,26 @@ class AuthController {
         }
 
         $name = $_POST['name'] ?? '';
-        $email = $_POST['email'] ?? '';
+        $mail = $_POST['email'] ?? '';
         $password = $_POST['password'] ?? '';
+        $firstName = isset($_POST['firstName']) ? trim($_POST['firstName']) : '';
+        $lastName = isset($_POST['lastName']) ? trim($_POST['lastName']) : '';
 
-        $validation = ValidatorController::register($email, $password);
-        if ($validation) {
-            $userEntity = new UserEntity(null, $name, $email, $password);
-            $userModel = new UserModel();
-            $userModel->createUser($userEntity);
-
-            $user = $userModel->getUserByEmail($email);
-            $this->authenticateUser($user); // Connexion automatique après enregistrement
+        if (empty($firstName) || empty($lastName)) {
+            Utils::sendResponse('error', 'Les champs Prénom et Nom sont requis.');
+            return;
         }
+
+        // Hash du mot de passe avant de l'enregistrer
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        $userEntity = new UserEntity(null, $firstName, $lastName, $name, $mail, $hashedPassword);
+
+        $userModel = new UserModel();
+        $userModel->addUser($userEntity);
+
+        $user = $userModel->getUserByEmail($mail);
+        $this->authenticateUser($user);
     }
 
     public static function logout() {
@@ -61,8 +76,6 @@ class AuthController {
             setcookie('auth_token', '', time() - 3600, '/');
         }
 
-        header("Location: /login");
-        exit;
     }
 
     /**
@@ -71,6 +84,12 @@ class AuthController {
      * @param bool $remember Si vrai, le JWT est valide pendant 30 jours, sinon 2 heures.
      */
     private function authenticateUser(UserEntity $user, $remember = false) {
+        // Vérifier si l'utilisateur est valide avant de procéder
+        if (!$user->getUserId()) {
+            ResponseController::sendResponse('error', "Utilisateur invalide", false, '');
+            return;
+        }
+
         $expirationTime = $remember ? (time() + 30 * 24 * 3600) : (time() + 7200); // 30 jours ou 2 heures
 
         $headerJWT = [
@@ -79,12 +98,16 @@ class AuthController {
         ];
 
         $payloadJWT = [
-            'userId' => $user->getId(),
+            'userId' => $user->getUserId(),
+            'firstName' => $user->getFirstName(),
+            'lastName' => $user->getLastName(),
             "exp" => $expirationTime,
             "revocate" => 0,
         ];
 
         $jwt = (new JWT())->generateJWT($headerJWT, $payloadJWT);
         setcookie('auth_token', $jwt, $expirationTime, '/', '', true, true);
+
+        ResponseController::sendResponse('success', "Utilisateur bien connecté", true, '');
     }
 }
