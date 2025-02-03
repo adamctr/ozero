@@ -1,6 +1,6 @@
 <?php
 
-class PageView {
+class FrontPageView {
     public function __construct(private $content, private $title, private $description, private $jsFilesNames = null, private $cssFilesNames = null) {
     }
 

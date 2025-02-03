@@ -69,7 +69,7 @@ class ProductBackView extends View {
 
         <?php
         $contentPage = ob_get_clean();
-        (new BackOfficePageView($contentPage, 'Gestion des Produits', "Ceci est la page de gestion des produits.", ['backoffice', 'product']))->show();
+        (new BackOfficePageView($contentPage, 'Gestion des Produits', "Ceci est la page de gestion des produits.", ['backoffice', 'productsback']))->show();
     }
 
     private function renderAddModal() {
@@ -78,7 +78,7 @@ class ProductBackView extends View {
         <div class="modal">
             <div class="modal-box w-11/12 max-w-5xl">
                 <h3 class="font-bold text-lg mb-6">Nouveau produit</h3>
-                <form method="POST" action="/admin/products/create">
+                <form method="POST" action="/admin/products/create" enctype="multipart/form-data">
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">Nom du produit</span>
@@ -107,6 +107,13 @@ class ProductBackView extends View {
                         <input type="number" name="stock" class="input input-bordered" required>
                     </div>
 
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Image</span>
+                        </label>
+                        <input type="file" name="img" class="input input-bordered" accept="image/*">
+                    </div>
+
                     <div class="modal-action">
                         <button type="submit" class="btn btn-primary">Créer le produit</button>
                         <label for="add-product-modal" class="btn">Annuler</label>
@@ -123,7 +130,7 @@ class ProductBackView extends View {
         <div class="modal">
             <div class="modal-box w-11/12 max-w-5xl">
                 <h3 class="font-bold text-lg mb-6">Modifier le produit</h3>
-                <form method="POST" action="/admin/products/update">
+                <form method="POST" action="/admin/products/update" enctype="multipart/form-data">
                     <input type="hidden" name="productId" id="edit-product-id">
 
                     <div class="form-control">
@@ -154,6 +161,13 @@ class ProductBackView extends View {
                         <input type="number" name="stock" id="edit-stock" class="input input-bordered" required>
                     </div>
 
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Image</span>
+                        </label>
+                        <input type="file" name="img" class="input input-bordered" accept="image/*">
+                    </div>
+
                     <div class="modal-action">
                         <button type="submit" class="btn btn-primary">Enregistrer</button>
                         <label for="edit-product-modal" class="btn">Annuler</label>
@@ -163,6 +177,7 @@ class ProductBackView extends View {
         </div>
         <?php
     }
+
 
     private function renderDeleteModal() {
         ?>
