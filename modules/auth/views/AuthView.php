@@ -18,7 +18,7 @@ class AuthView {
 
                 <h2 class="text-2xl font-bold mb-4 text-center">Se connecter</h2>
 
-                <div id="messageContainer" class=""></div>
+                <div id="flashMessageContainer" class=""></div>
 
                 <div class="form-control mb-4">
                     <label for="email" class="label">
@@ -73,7 +73,7 @@ class AuthView {
                 <h2 class="text-2xl font-bold mb-4 text-center">S'inscrire</h2>
 
                 <!-- Conteneur pour les messages -->
-                <div id="messageContainer" class=""></div>
+                <div id="flashMessageContainer" class=""></div>
 
                 <!-- Champ prénom -->
                 <div class="form-control mb-4">

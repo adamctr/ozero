@@ -20,13 +20,14 @@ document.addEventListener('DOMContentLoaded', function() {
       })
         .then(response => response.json())
         .then(data => {
-          console.log(data);
 
           if (data.status === 'success') {
             window.location.href = '/';
           }
-          const messageContainer = document.getElementById('messageContainer');
-          messageContainer.innerHTML = data.divMessageHtml;
+
+          // Afficher le message d'erreur ou de succès dans le conteneur
+          showFlashMessage(data)
+
         })
         .catch(error => {
           console.error('Error:', error);
@@ -64,8 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
           }
 
           // Afficher le message d'erreur ou de succès dans le conteneur
-          const messageContainer = document.getElementById('messageContainer');
-          messageContainer.innerHTML = data.divMessageHtml;
+          showFlashMessage(data)
+
         })
         .catch(error => {
           console.error('Error:', error);

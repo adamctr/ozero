@@ -69,7 +69,7 @@ class UserModel
         $nickName = $userEntity->getNickName();
         $mail = $userEntity->getMail();
         $password = $userEntity->getPassword();
-        $verified = false;
+        $verified = 0;
         $roleId = 3;
 
         // Debug pour vérifier les valeurs
