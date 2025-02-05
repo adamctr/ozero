@@ -23,6 +23,7 @@ class Autoloader {
         $baseDirs = [
             __DIR__ . '/../routes/',
             __DIR__ . '/../src/',
+            __DIR__ . '/../migrations/',
         ];
 
         // Ajout des chemins dynamiques pour chaque module

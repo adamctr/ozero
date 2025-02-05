@@ -39,6 +39,6 @@ class Migrations
 
     public function migrate()
     {
-
+        (new CreateProductImagesTable())->migrate();
     }
 }

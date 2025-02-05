@@ -76,6 +76,9 @@ class AuthController {
             setcookie('auth_token', '', time() - 3600, '/');
         }
 
+        // Redirection après le logout
+        header("Location: /login");
+        exit();
     }
 
     /**

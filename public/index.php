@@ -12,8 +12,8 @@ define('APP_ENV', 'dev');
 
 require_once '../includes/database.php';
 
-/*$migrations = new Migrations();
-$migrations->migrate();*/
+$migrations = new Migrations();
+$migrations->migrate();
 
 require_once '../routes/index.php';
 

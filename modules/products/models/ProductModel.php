@@ -56,9 +56,9 @@ class ProductModel
      * @param float $price
      * @param string|null $img
      * @param int $stock
-     * @return bool
+     * @return int|null
      */
-    public function addProduct(string $product, ?string $description, float $price, ?string $img, int $stock): bool
+    public function addProduct(string $product, ?string $description, float $price, ?string $img, int $stock): int|null
     {
         $stmt = $this->db->prepare("INSERT INTO products (product, description, price, img, stock) VALUES (:product, :description, :price, :img, :stock)");
         $stmt->bindParam(':product', $product);
@@ -67,7 +67,9 @@ class ProductModel
         $stmt->bindParam(':img', $img);
         $stmt->bindParam(':stock', $stock, \PDO::PARAM_INT);
 
-        return $stmt->execute();
+        $stmt->execute();
+        return (int) $this->db->lastInsertId();
+
     }
 
     /**
@@ -104,6 +106,15 @@ class ProductModel
     {
         $stmt = $this->db->prepare("DELETE FROM products WHERE productId = :productId");
         $stmt->bindParam(':productId', $productId, \PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
+
+    public function addProductImage($productId, $imagePath) {
+        $sql = "INSERT INTO productsImages (productId, image_path) VALUES (:productId, :image_path)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':productId', $productId, PDO::PARAM_INT);
+        $stmt->bindValue(':image_path', $imagePath, PDO::PARAM_STR);
 
         return $stmt->execute();
     }

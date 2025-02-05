@@ -11,6 +11,7 @@ class ProductBackView extends View {
         <!-- Main Content -->
         <div class="flex flex-col gap-4 justify-between items-center mb-6">
             <h1 class="text-3xl font-bold">Gestion des produits</h1>
+            <div id="flashMessageContainer"></div>
             <label for="add-product-modal" class="btn btn-primary gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -69,7 +70,7 @@ class ProductBackView extends View {
 
         <?php
         $contentPage = ob_get_clean();
-        (new BackOfficePageView($contentPage, 'Gestion des Produits', "Ceci est la page de gestion des produits.", ['backoffice', 'productsback']))->show();
+        (new BackOfficePageView($contentPage, 'Gestion des Produits', "Ceci est la page de gestion des produits.", ['backoffice', 'adminProducts']))->show();
     }
 
     private function renderAddModal() {
@@ -78,7 +79,7 @@ class ProductBackView extends View {
         <div class="modal">
             <div class="modal-box w-11/12 max-w-5xl">
                 <h3 class="font-bold text-lg mb-6">Nouveau produit</h3>
-                <form method="POST" action="/admin/products/create" enctype="multipart/form-data">
+                <form id="productForm" method="POST" action="/admin/products/create" enctype="multipart/form-data">
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">Nom du produit</span>
@@ -111,7 +112,7 @@ class ProductBackView extends View {
                         <label class="label">
                             <span class="label-text">Image</span>
                         </label>
-                        <input type="file" name="img" class="input input-bordered" accept="image/*">
+                        <input type="file" class="input input-bordered" name="images[]" multiple required>
                     </div>
 
                     <div class="modal-action">

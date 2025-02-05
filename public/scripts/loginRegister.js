@@ -74,11 +74,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Désactiver redirect lors du log-out
   const logoutForm = document.getElementById('logoutForm');
   if (logoutForm) {
     logoutForm.addEventListener('submit', function(e) {
       e.preventDefault();
+      window.location.href = '/login';
     })
   }
 });
