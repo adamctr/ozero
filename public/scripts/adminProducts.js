@@ -1,77 +1,221 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // Fonction pour remplir le formulaire d'édition avec les données du produit
-  function populateEditForm(button) {
-    const productId = button.getAttribute('data-product-id');
-    const name = button.getAttribute('data-product');
-    const description = button.getAttribute('data-description');
-    const price = button.getAttribute('data-price');
-    const stock = button.getAttribute('data-stock');
-
-    document.getElementById('edit-product-id').value = productId;
-    document.getElementById('edit-product').value = name;
-    document.getElementById('edit-description').value = description;
-    document.getElementById('edit-price').value = price;
-    document.getElementById('edit-stock').value = stock;
+class ProductManager {
+  constructor() {
+    this.bindEvents();
   }
 
-  // Fonction pour remplir le formulaire de suppression avec l'ID du produit
-  function populateDeleteForm(button) {
+  bindEvents() {
+    document.addEventListener('DOMContentLoaded', () => {
+      this.initializeEditButtons();
+      this.initializeDeleteButtons();
+      this.initializeFormHandlers();
+      this.initializeImageDeleteHandlers();
+    });
+  }
+
+  initializeEditButtons() {
+    document.querySelectorAll('.btn-info').forEach(button => {
+      button.addEventListener('click', () => this.handleEditProduct(button));
+    });
+  }
+
+  initializeDeleteButtons() {
+    document.querySelectorAll('.btn-error[data-product-id]').forEach(button => {
+      button.addEventListener('click', () => this.handleDeleteModal(button));
+    });
+  }
+
+  initializeFormHandlers() {
+    const addForm = document.getElementById('productForm');
+    const editForm = document.getElementById('edit-product-form');
+    const deleteForm = document.getElementById('delete-form');
+
+    if (addForm) {
+      addForm.addEventListener('submit', (e) => this.handleAddProduct(e));
+    }
+    if (editForm) {
+      editForm.addEventListener('submit', (e) => this.handleUpdateProduct(e));
+    }
+    if (deleteForm) {
+      deleteForm.addEventListener('submit', (e) => this.handleDeleteProduct(e));
+    }
+  }
+
+  initializeImageDeleteHandlers() {
+    document.getElementById('edit-image-container')?.addEventListener('click',
+      (e) => this.handleImageDelete(e));
+  }
+
+  handleEditProduct(button) {
+    const productData = {
+      id: button.getAttribute('data-product-id'),
+      name: button.getAttribute('data-product'),
+      description: button.getAttribute('data-description'),
+      price: button.getAttribute('data-price'),
+      stock: button.getAttribute('data-stock'),
+      images: button.getAttribute('data-images')
+    };
+
+    this.populateEditForm(productData);
+  }
+
+  populateEditForm(productData) {
+    const formFields = {
+      'edit-product-id': productData.id,
+      'edit-product': productData.name,
+      'edit-description': productData.description,
+      'edit-price': productData.price,
+      'edit-stock': productData.stock
+    };
+
+    Object.entries(formFields).forEach(([id, value]) => {
+      document.getElementById(id).value = value;
+    });
+
+    this.updateImageContainer(productData);
+  }
+
+  updateImageContainer(productData) {
+    const imageContainer = document.getElementById('edit-image-container');
+    if (!imageContainer) return;
+
+    imageContainer.innerHTML = '';
+
+    if (productData.images) {
+      const images = JSON.parse(productData.images);
+      images.forEach(image => {
+        const imageElement = this.createImageThumbnail(image, productData.id);
+        imageContainer.appendChild(imageElement);
+      });
+    }
+  }
+
+  createImageThumbnail(imageUrl, productId) {
+    const div = document.createElement('div');
+    div.classList.add('image-thumbnail');
+    div.style.position = 'relative';
+
+    div.innerHTML = `
+      <img src="${imageUrl}" alt="Product Image" class="object-cover" style="height:4rem;"/>
+      <button type="button" class="btn btn-sm btn-error delete-image" 
+        data-product-id="${productId}" data-image="${imageUrl}" 
+        style="position: absolute; top: 0; right: 0; background: none; border: none; color: red; font-size: 1.5rem; padding: 0;">
+        ×
+      </button>
+    `;
+
+    return div;
+  }
+
+  async handleAddProduct(event) {
+    event.preventDefault();
+    try {
+      const formData = new FormData(event.target);
+      const response = await ApiService.postFormData(API_ENDPOINTS.ADD_PRODUCT, formData);
+
+      if (response.status === 'success') {
+        closeAllModals();
+        showFlashMessage(response);
+        location.reload();
+      } else {
+        showFlashMessage({
+          status: 'error',
+          message: response.message || 'Une erreur est survenue lors de l\'ajout du produit.'
+        });
+      }
+    } catch (error) {
+      showFlashMessage({
+        status: 'error',
+        message: error.message
+      });
+    }
+  }
+
+  async handleUpdateProduct(event) {
+    event.preventDefault();
+    try {
+      const formData = new FormData(event.target);
+      const response = await ApiService.postFormData(API_ENDPOINTS.UPDATE_PRODUCT, formData);
+
+      if (response.status === 'success') {
+        closeAllModals();
+        showFlashMessage(response);
+        location.reload();
+      } else {
+        showFlashMessage({
+          status: 'error',
+          message: response.message || 'Une erreur est survenue lors de la mise à jour du produit.'
+        });
+      }
+    } catch (error) {
+      showFlashMessage({
+        status: 'error',
+        message: error.message
+      });
+    }
+  }
+
+  async handleDeleteProduct(event) {
+    event.preventDefault();
+    try {
+      const productId = document.getElementById('delete-product-id').value;
+      const response = await ApiService.fetchJson(API_ENDPOINTS.DELETE_PRODUCT, {
+        method: 'POST',
+        body: JSON.stringify({ productId })
+      });
+
+      if (response.status === 'success') {
+        closeAllModals();
+        showFlashMessage(response);
+        location.reload();
+      } else {
+        showFlashMessage({
+          status: 'error',
+          message: response.message || 'Une erreur est survenue lors de la suppression du produit.'
+        });
+      }
+    } catch (error) {
+      showFlashMessage({
+        status: 'error',
+        message: error.message
+      });
+    }
+  }
+
+  async handleImageDelete(event) {
+    if (!event.target.classList.contains('delete-image')) return;
+
+    try {
+      const imageToDelete = event.target.getAttribute('data-image');
+      const productId = event.target.getAttribute('data-product-id');
+
+      const response = await ApiService.fetchJson(API_ENDPOINTS.DELETE_IMAGE, {
+        method: 'POST',
+        body: JSON.stringify({ productId, image: imageToDelete })
+      });
+
+      if (response.status === 'success') {
+        event.target.closest('.image-thumbnail').remove();
+        showFlashMessage(response);
+      } else {
+        showFlashMessage({
+          status: 'error',
+          message: response.message || 'Une erreur est survenue lors de la suppression de l\'image.'
+        });
+      }
+    } catch (error) {
+      showFlashMessage({
+        status: 'error',
+        message: error.message
+      });
+    }
+  }
+
+  handleDeleteModal(button) {
     const productId = button.getAttribute('data-product-id');
     document.getElementById('delete-product-id').value = productId;
+    document.getElementById('delete-product-modal').checked = true;
   }
+}
 
-  // Sélectionner tous les boutons de modification et de suppression
-  const editButtons = document.querySelectorAll('.btn-info');
-  const deleteButtons = document.querySelectorAll('.btn-error');
-
-  // Attacher l'événement de clic aux boutons "Modifier"
-  editButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      populateEditForm(this);
-    });
-  });
-
-  // Attacher l'événement de clic aux boutons "Supprimer"
-  deleteButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      populateDeleteForm(this);
-      document.getElementById('delete-product-modal').checked = true; // Ouvrir le modal de suppression
-    });
-  });
-});
-
-// Ajouter Produit
-document.addEventListener("DOMContentLoaded", function () {
-  const productForm = document.getElementById("productForm");
-
-  if (productForm) {
-    productForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      let formData = new FormData(this);
-
-      fetch("/admin/products/add", {
-        method: "POST",
-        body: formData
-      })
-        .then(response => response.json())
-        .then(data => {
-          if (data.status === "success") {
-            alert("Produit ajouté avec succès !");
-            productForm.reset();
-          } else {
-            alert("Erreur : " + data.message);
-          }
-
-          showFlashMessage(data)
-          closeAllModals()
-
-
-        })
-        .catch(error => {
-          console.error("Erreur AJAX :", error);
-          alert("Une erreur est survenue lors de l'ajout du produit.");
-        });
-    });
-  }
-});
+// Initialize the product manager
+const productManager = new ProductManager();

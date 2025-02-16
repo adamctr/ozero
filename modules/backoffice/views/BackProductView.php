@@ -1,6 +1,6 @@
 <?php
 
-class ProductBackView extends View {
+class BackProductView extends View {
 
     public function show() {
         $productModel = new ProductModel();
@@ -11,7 +11,6 @@ class ProductBackView extends View {
         <!-- Main Content -->
         <div class="flex flex-col gap-4 justify-between items-center mb-6">
             <h1 class="text-3xl font-bold">Gestion des produits</h1>
-            <div id="flashMessageContainer"></div>
             <label for="add-product-modal" class="btn btn-primary gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -26,6 +25,7 @@ class ProductBackView extends View {
                 <thead class="bg-base-200">
                 <tr>
                     <th class="text-sm font-bold">ID</th>
+                    <th class="text-sm font-bold">Image</th>
                     <th class="text-sm font-bold">Nom</th>
                     <th class="text-sm font-bold">Description</th>
                     <th class="text-sm font-bold">Prix</th>
@@ -37,6 +37,9 @@ class ProductBackView extends View {
                 <?php foreach ($products as $product): ?>
                     <tr>
                         <td><?= htmlspecialchars($product->getProductId()) ?></td>
+                        <td>
+                            <img class="h-12" src="<?= htmlspecialchars($product->getFirstImage() ?? '', ENT_QUOTES, 'UTF-8') ?>" alt="">
+                        </td>
                         <td><?= htmlspecialchars($product->getProduct()) ?></td>
                         <td><?= htmlspecialchars($product->getDescription()) ?></td>
                         <td><?= htmlspecialchars($product->getPrice()) ?></td>
@@ -48,8 +51,8 @@ class ProductBackView extends View {
                                    data-product="<?= htmlspecialchars($product->getProduct()) ?>"
                                    data-description="<?= htmlspecialchars($product->getDescription()) ?>"
                                    data-price="<?= htmlspecialchars($product->getPrice()) ?>"
-                                   data-stock="<?= htmlspecialchars($product->getStock()) ?>">
-                                Modifier
+                                   data-stock="<?= htmlspecialchars($product->getStock()) ?>"
+                                   data-images="<?= htmlspecialchars(json_encode($product->getImages()), ENT_QUOTES, 'UTF-8') ?>">                                Modifier
                             </label>
 
                             <button class="btn btn-sm btn-error"
@@ -131,7 +134,7 @@ class ProductBackView extends View {
         <div class="modal">
             <div class="modal-box w-11/12 max-w-5xl">
                 <h3 class="font-bold text-lg mb-6">Modifier le produit</h3>
-                <form method="POST" action="/admin/products/update" enctype="multipart/form-data">
+                <form method="POST" id="edit-product-form" action="/admin/products/update" enctype="multipart/form-data">
                     <input type="hidden" name="productId" id="edit-product-id">
 
                     <div class="form-control">
@@ -162,11 +165,14 @@ class ProductBackView extends View {
                         <input type="number" name="stock" id="edit-stock" class="input input-bordered" required>
                     </div>
 
-                    <div class="form-control">
+                    <div class="form-control ">
                         <label class="label">
-                            <span class="label-text">Image</span>
+                            <span class="label-text">Images</span>
                         </label>
-                        <input type="file" name="img" class="input input-bordered" accept="image/*">
+                        <div id="edit-image-container" class="flex gap-2">
+                            <!-- Les images existantes seront ajoutées ici -->
+                        </div>
+                        <input type="file" name="images[]" class="input input-bordered mt-4" accept="image/*" multiple>
                     </div>
 
                     <div class="modal-action">

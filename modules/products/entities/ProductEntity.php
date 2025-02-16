@@ -7,7 +7,7 @@ class ProductEntity {
     private float $price;           // Prix en float
     private int $stock;             // Stock en entier
     private \DateTime $createdAt;   // Date de création
-    private ?string $img;           // Image optionnelle
+    private array $images = [];           // Image(s)
 
     // Constructeur
     public function __construct(
@@ -17,7 +17,7 @@ class ProductEntity {
         int $stock,
         \DateTime $createdAt,
         ?string $description = null,  // Paramètre optionnel
-        ?string $img = null           // Paramètre optionnel
+        ?array $images = null           // Paramètre optionnel
     ) {
         $this->productId = $productId;
         $this->product = $product;
@@ -25,8 +25,7 @@ class ProductEntity {
         $this->price = $price;
         $this->stock = $stock;
         $this->createdAt = $createdAt;
-        $this->img = $img;
-    }
+        $this->images = $images;    }
 
     // Getters
     public function getProductId(): ?int {
@@ -45,8 +44,19 @@ class ProductEntity {
         return $this->price;
     }
 
-    public function getImg(): ?string {
-        return $this->img;
+    public function getImages(): array
+    {
+        return $this->images;
+    }
+
+    public function getFirstImage(): ?string
+    {
+        return !empty($this->images) ? $this->images[0] : null;
+    }
+
+    public function setImages(array $images): void
+    {
+        $this->images = $images;
     }
 
     public function getStock(): int {

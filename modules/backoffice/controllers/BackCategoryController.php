@@ -1,6 +1,6 @@
 <?php
 
-class CategoryController {
+class BackCategoryController {
 
     public function __construct() {
     }
@@ -9,7 +9,7 @@ class CategoryController {
      * @return void
      */
     public function execute() {
-        $view = new CategoryView();
+        $view = new BackCategoryView();
         $view->show();
     }
 }

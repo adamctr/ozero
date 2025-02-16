@@ -54,7 +54,8 @@ class NavbarView extends View {
                             </ul>
                         </details>
                     </li>
-                    <li><a>Item 3</a></li>
+                    <li><a href="/blog">BLOG</a></li>
+                    <li><a href="/diy">DIY</a></li>
                 </ul>
             </div>
             <div class="navbar-end">

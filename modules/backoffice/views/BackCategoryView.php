@@ -1,6 +1,6 @@
 <?php
 
-class CategoryView extends View {
+class BackCategoryView extends View {
 
     public function show() {
         $categoryModel = new CategoryModel();

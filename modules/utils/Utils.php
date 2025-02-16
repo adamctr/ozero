@@ -8,7 +8,7 @@ class Utils
     /**
      * Fonction utilitaire pour envoyer une réponse JSON
      */
-    static function sendResponse($success, $message, $data = null)
+    static function sendResponse(string $success, string $message, $data = null)
     {
         $response = ['status' => $success, 'message' => $message];
 

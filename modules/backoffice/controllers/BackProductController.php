@@ -1,6 +1,6 @@
 <?php
 
-class ProductBackController {
+class BackProductController {
 
     public function __construct() {
     }
@@ -9,7 +9,7 @@ class ProductBackController {
      * @return void
      */
     public function execute() {
-        $view = new ProductBackView();
+        $view = new BackProductView();
         $view->show();
     }
 }

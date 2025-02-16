@@ -1,6 +1,6 @@
 <?php
 
-class UserEditProfileView extends View {
+class BackUserEditProfileView extends View {
 
     private $userId;
 

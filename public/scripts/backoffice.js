@@ -1,5 +1,44 @@
 // Utils
+// Constants
+const API_ENDPOINTS = {
+  ADD_PRODUCT: '/admin/products/add',
+  UPDATE_PRODUCT: '/admin/products/update',
+  DELETE_PRODUCT: '/admin/products/delete',
+  DELETE_IMAGE: '/admin/products/deleteimage'
+};
 
+// Utility functions
+const ApiService = {
+  async fetchJson(url, options) {
+    try {
+      const response = await fetch(url, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options?.headers
+        }
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('API Error:', error);
+      throw new Error('Une erreur de communication est survenue avec le serveur.');
+    }
+  },
+
+  async postFormData(url, formData) {
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        body: formData
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Form Submit Error:', error);
+      throw new Error('Une erreur est survenue lors de l\'envoi du formulaire.');
+    }
+  }
+};
 function closeAllModals() {
   const modals = document.querySelectorAll('.modal');
   modals.forEach(modal => {
@@ -9,14 +48,12 @@ function closeAllModals() {
 }
 
 // Sidebar
-
 document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('sidebarToggle').addEventListener('click', function() {
     const sidebar = document.getElementById('sidebar');
     sidebar.classList.toggle('open');
   });
-
 })
 
 

@@ -23,7 +23,12 @@ class ProductModel
 
         $product = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($product) {
-            return $this->mapToEntity($product);
+            // Créer l'entité Product sans images
+            $productEntity = $this->mapToEntity($product);
+            // Ajouter les images après la création de l'entité
+            $images = $this->getProductImages($productId);
+            $productEntity->setImages($images); // Méthode pour définir les images dans l'entité
+            return $productEntity;
         }
         return null;
     }
@@ -69,7 +74,6 @@ class ProductModel
 
         $stmt->execute();
         return (int) $this->db->lastInsertId();
-
     }
 
     /**
@@ -110,7 +114,15 @@ class ProductModel
         return $stmt->execute();
     }
 
-    public function addProductImage($productId, $imagePath) {
+    /**
+     * Ajoute une image pour un produit
+     *
+     * @param int $productId
+     * @param string $imagePath
+     * @return bool
+     */
+    public function addProductImages(int $productId, string $imagePath): bool
+    {
         $sql = "INSERT INTO productsImages (productId, image_path) VALUES (:productId, :image_path)";
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':productId', $productId, PDO::PARAM_INT);
@@ -127,18 +139,108 @@ class ProductModel
      */
     private function mapToEntity(array $data): ProductEntity
     {
-        // Assurez-vous de convertir le prix en float
-        $price = (float) $data['price']; // Convertir en float
-        $createdAt = new \DateTime($data['createdAt']); // Créer un objet DateTime pour createdAt
+        $price = (float) $data['price'];
+        $createdAt = new \DateTime($data['createdAt']);
 
-        return new ProductEntity(
+        // Récupérer les images du produit (si elles existent)
+        $images = $this->getProductImages($data['productId']);
+
+        $productEntity = new ProductEntity(
             $data['productId'],
             $data['product'],
-            $price,  // Passer le prix en tant que float
+            $price,
             $data['stock'],
-            $createdAt,  // Passer un objet DateTime pour createdAt
-            $data['description'] ?? null,  // Description peut être null
-            $data['img'] ?? null   // Image peut être null
+            $createdAt,
+            $data['description'] ?? null,
+            $images
         );
+
+        return $productEntity;
+    }
+
+    /**
+     * Récupère toutes les images associées à un produit
+     *
+     * @param int $productId
+     * @return array
+     */
+    public function getProductImages(int $productId): array
+    {
+        $stmt = $this->db->prepare("SELECT image_path FROM productsImages WHERE productId = :productId ORDER BY id ASC");
+        $stmt->bindValue(':productId', $productId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $images = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $images[] = $row['image_path'];
+        }
+        return $images;
+    }
+
+    /**
+     * Récupère la première image associée à un produit
+     *
+     * @param int $productId
+     * @return string|null Le chemin de l'image ou null si aucune image n'est trouvée
+     */
+    public function getFirstProductImage(int $productId): ?string
+    {
+        $sql = "SELECT image_path FROM productsImages WHERE productId = :productId ORDER BY id ASC LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':productId', $productId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $image = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $image ? $image['image_path'] : null;
+    }
+
+    /**
+     * Supprime une image d'un produit
+     *
+     * @param int $productId
+     * @param string $imagePath
+     * @return bool
+     */
+    public function deleteProductImage(int $productId, string $imagePath): bool
+    {
+        $sql = "DELETE FROM productsImages WHERE productId = :productId AND image_path = :image_path";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':productId', $productId, PDO::PARAM_INT);
+        $stmt->bindValue(':image_path', $imagePath, PDO::PARAM_STR);
+
+        return $stmt->execute();
+    }
+
+    // Vérifier si l'image est associée au produit
+    public function isImageAssociatedWithProduct($productId, $imagePath) {
+        // Requête pour vérifier si l'image appartient bien au produit
+        $sql = "SELECT COUNT(*) FROM productsImages WHERE productId = :productId AND image_path = :image_path";
+
+        // Exécution de la requête préparée
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':productId', $productId, PDO::PARAM_INT);
+        $stmt->bindParam(':image_path', $imagePath, PDO::PARAM_STR);
+
+        // Exécuter et récupérer le nombre de résultats
+        $stmt->execute();
+        $result = $stmt->fetchColumn();
+
+        // Si le résultat est supérieur à 0, l'image est associée au produit
+        return $result > 0;
+    }
+
+    /**
+     * Supprime toutes les images associées à un produit
+     *
+     * @param int $productId
+     * @return bool
+     */
+    public function deleteAllProductImages(int $productId): bool
+    {
+        $sql = "DELETE FROM productsImages WHERE productId = :productId";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':productId', $productId, PDO::PARAM_INT);
+
+        return $stmt->execute();
     }
 }

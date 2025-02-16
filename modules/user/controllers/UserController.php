@@ -1,7 +1,6 @@
 <?php
 
 class UserController {
-    protected $user;
 
     public function __construct($userId = null) {
         if ($userId !== null) {

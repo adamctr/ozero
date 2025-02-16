@@ -1,6 +1,6 @@
 <?php
 
-class UserEditProfileController {
+class BackUserEditProfileController {
     private $userId;
     public function __construct() {
         $userId = (new SessionController())->getUserId();
@@ -11,7 +11,7 @@ class UserEditProfileController {
      * @return void
      */
     public function execute() {
-        $view = new UserEditProfileView($this->userId);
+        $view = new BackUserEditProfileView($this->userId);
         $view->show();
     }
 }

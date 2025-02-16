@@ -20,6 +20,7 @@ class BackOfficePageView {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <meta http-equiv="X-UA-Compatible" content="ie=edge">
             <meta name="description" content="<?=$this->description?>">
+            <meta name="csrf-token" content="<?= SessionController::getCSRFToken() ?>">
             <?php foreach ($cssPaths as $cssPath): ?>
                 <link href="/<?= $cssPath ?>" rel="stylesheet" />
             <?php endforeach; ?>
@@ -39,12 +40,15 @@ class BackOfficePageView {
             <nav class="space-y-2">
                 <a href="/admin/users" class="block p-3 rounded bg-gray-700 hover:bg-gray-600">👤 Utilisateurs</a>
                 <a href="/admin/products" class="block p-3 rounded bg-gray-700 hover:bg-gray-600">📦 Produits</a>
+                <a href="/admin/articles" class="block p-3 rounded bg-gray-700 hover:bg-gray-600">Blog & Diy</a>
+
                 <a href="/admin/categories" class="block p-3 rounded bg-gray-700 hover:bg-gray-600">📂 Catégories</a>
                 <a href="/admin/orders" class="block p-3 rounded bg-gray-700 hover:bg-gray-600">🛒 Commandes</a>
                 <a href="/admin/payments" class="block p-3 rounded bg-gray-700 hover:bg-gray-600">💳 Paiements</a>
             </nav>
         </aside>
         <main class="flex-1 p-5 overflow-auto">
+            <div id="flashMessageContainer"></div>
             <?= $this->content; ?>
         </main>
 
