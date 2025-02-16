@@ -101,9 +101,11 @@ class ArticleModel
         $content = $articleEntity->getContent();
         $img = $articleEntity->getImg();
         $authorId = $articleEntity->getAuthorId();
+        $type = $articleEntity->getType();
+
 
         $stmt = $this->db->prepare("UPDATE articles 
-            SET title = :title, articleDate = :articleDate, content = :content, img = :img, authorId = :authorId 
+            SET title = :title, articleDate = :articleDate, content = :content, img = :img, authorId = :authorId, type = :type 
             WHERE articleId = :articleId");
 
         $stmt->bindParam(':articleId', $articleId, \PDO::PARAM_INT);
@@ -112,6 +114,7 @@ class ArticleModel
         $stmt->bindParam(':content', $content, \PDO::PARAM_STR);
         $stmt->bindParam(':img', $img, \PDO::PARAM_STR);
         $stmt->bindParam(':authorId', $authorId, \PDO::PARAM_INT);
+        $stmt->bindParam(':type', $type, \PDO::PARAM_STR);
 
         return $stmt->execute();
     }
@@ -145,7 +148,9 @@ class ArticleModel
             ->setArticleDate($data['articleDate'])
             ->setContent($data['content'])
             ->setImg($data['img'])
-            ->setAuthorId($data['authorId']);
+            ->setAuthorId($data['authorId'])
+            ->setType($data['type']);
+
 
         // Ajouter le nom de l'auteur
         $authorName = $data['firstName'] . ' ' . $data['lastName'];

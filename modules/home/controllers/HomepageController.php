@@ -12,4 +12,14 @@ class HomepageController {
         $view = new HomepageView();
         $view->show();
     }
+
+    public function blog() {
+        $view = new ArticlesPageView();
+        $view->blogShow();
+    }
+
+    public function diy() {
+        $view = new ArticlesPageView();
+        $view->diyShow();
+    }
 }

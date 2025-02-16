@@ -2,12 +2,33 @@
 
 class ArticleController {
     private $articleModel;
-    private int $articleId;
+    private $article;
+    private $articleId;
 
     public function __construct($articleId = null)
     {
-        $this->articleModel = new ArticleModel();
-        $this->articleId = $articleId;
+        if ($articleId) {
+            $this->articleModel = new ArticleModel();
+            $this->article = $this->articleModel->getArticleById($articleId);
+            $this->articleId = $articleId;
+        }
+    }
+
+    public function execute() {
+        $view = new ArticleView($this->article);
+        $view->show();
+    }
+
+    public function showBlog()
+    {
+        $view = new ArticleView();
+        $view->showBlog();
+    }
+
+    public function showDiy()
+    {
+        $view = new ArticleView();
+        $view->showDiy();
     }
 
     public function create() {
@@ -15,7 +36,7 @@ class ArticleController {
             Utils::sendResponse('error', 'Méthode non autorisée');
         }
 
-        if (!isset($_POST['title']) || !isset($_POST['content'])) {
+        if (!isset($_POST['title']) || !isset($_POST['content']) || !isset($_POST['author']) || !isset($_POST['type'])) {
             Utils::sendResponse('error', 'Données invalides');
         }
 
@@ -23,6 +44,8 @@ class ArticleController {
         $article->setTitle($_POST['title']);
         $article->setContent($_POST['content']);
         $article->setImg($_POST['img'] ?? null);
+        $article->setType($_POST['type'] ?? null);
+
 
         if ($this->articleModel->addArticle($article)) {
             Utils::sendResponse('success', 'Article créé avec succès', $article);
@@ -38,7 +61,7 @@ class ArticleController {
             Utils::sendResponse('error', 'Méthode non autorisée');
         }
 
-        if (!isset($_POST['title']) || !isset($_POST['content'])) {
+        if (!isset($_POST['title']) || !isset($_POST['content']) || !isset($_POST['type'])) {
             Utils::sendResponse('error', 'Données invalides');
         }
 
@@ -50,6 +73,7 @@ class ArticleController {
         $article->setTitle($_POST['title']);
         $article->setContent($_POST['content']);
         $article->setImg($_POST['img'] ?? $article->getImg());
+        $article->setType($_POST['type'] ?? null);
 
         if ($this->articleModel->updateArticle($article)) {
             Utils::sendResponse('success', "Article mis à jour avec succès", $article);

@@ -38,6 +38,15 @@ class BackCreateEditArticleView extends View {
                            required>
                 </div>
 
+                <!-- Type (Dropdown) -->
+                <div class="mb-4">
+                    <label class="block text-gray-700 mb-2" for="type">Type d'article</label>
+                    <select name="type" id="type" class="select select-bordered w-full">
+                        <option value="blog" <?= ($isEditing && $this->article->getType() === 'blog') ? 'selected' : '' ?>>Blog</option>
+                        <option value="diy" <?= ($isEditing && $this->article->getType() === 'diy') ? 'selected' : '' ?>>DIY</option>
+                    </select>
+                </div>
+
                 <!-- Contenu avec CKEditor 5 -->
                 <div class="mb-4">
                     <label class="block text-gray-700 mb-2" for="content">Contenu</label>

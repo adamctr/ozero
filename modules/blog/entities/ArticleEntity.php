@@ -9,7 +9,7 @@ class ArticleEntity {
     private ?string $img;
     private ?int $authorId;
     private ?string $authorName;
-
+    private ?string $type;
 
     // Constructeur
     public function __construct(
@@ -20,7 +20,7 @@ class ArticleEntity {
         ?string $img = null,
         ?int $authorId = null,
         ?string $authorName = null,
-
+        ?string $type = null
     ) {
         $this->articleId = $articleId;
         $this->title = $title;
@@ -29,7 +29,7 @@ class ArticleEntity {
         $this->img = $img;
         $this->authorId = $authorId;
         $this->authorName = $authorName;
-
+        $this->type = $type;
     }
 
     // Getters
@@ -57,15 +57,12 @@ class ArticleEntity {
         return $this->authorId;
     }
 
-    public function setAuthorName(string $authorName): self
-    {
-        $this->authorName = $authorName;
-        return $this;
+    public function getAuthorName(): ?string {
+        return $this->authorName;
     }
 
-    public function getAuthorName(): string
-    {
-        return $this->authorName;
+    public function getType(): ?string {
+        return $this->type;
     }
 
     // Setters avec return $this pour le chaînage
@@ -103,6 +100,16 @@ class ArticleEntity {
         return $this;
     }
 
+    public function setAuthorName(?string $authorName): self {
+        $this->authorName = $authorName;
+        return $this;
+    }
+
+    public function setType(?string $type): self {
+        $this->type = $type;
+        return $this;
+    }
+
     // Méthode pour convertir l'objet en tableau
     public function toArray(): array {
         return [
@@ -112,8 +119,8 @@ class ArticleEntity {
             'content'     => $this->content,
             'img'         => $this->img,
             'authorId'    => $this->authorId,
-            'authorName'    => $this->authorName
-
+            'authorName'  => $this->authorName,
+            'type'        => $this->type,
         ];
     }
 }
