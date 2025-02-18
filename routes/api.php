@@ -21,5 +21,5 @@ $router->addRoute('POST', '/admin/articles/create', 'ArticleController#create');
 $router->addRoute('POST', '/admin/articles/update/{id}', 'ArticleController#update');
 
 
-
-
+$router->addRoute('POST', '/panier/checkoutsession', 'CheckoutController#getCheckoutSession');
+$router->addRoute('GET', '/panier/checkoutsessionsuccess', 'CheckoutController#getCheckoutSuccess');
