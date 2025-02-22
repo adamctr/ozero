@@ -1,28 +1,29 @@
 <?php
 
-class BackUserView extends View {
+class BackUserView extends View
+{
 
-    public function show() {
-        $userModel = new UserModel();
-        $users = $userModel->getUsers();
+    public function show($userList, $rolesList)
+    {
+
 
         ob_start();
-        ?>
+?>
         <!-- Main Content -->
-            <div class="flex flex-col gap-4 justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold">Gestion des utilisateurs</h1>
-                <label for="add-user-modal" class="btn btn-primary gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Ajouter un utilisateur
-                </label>
-            </div>
+        <div class="flex flex-col gap-4 justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold">Gestion des utilisateurs</h1>
+            <label for="add-user-modal" class="btn btn-primary gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Ajouter un utilisateur
+            </label>
+        </div>
 
-            <!-- Tableau des utilisateurs -->
-            <div class="overflow-x-auto rounded-lg border border-base-200">
-                <table class="table table-zebra w-full">
-                    <thead class="bg-base-200">
+        <!-- Tableau des utilisateurs -->
+        <div class="overflow-x-auto rounded-lg border border-base-200">
+            <table class="table table-zebra w-full">
+                <thead class="bg-base-200">
                     <tr>
                         <th class="text-sm font-bold">ID</th>
                         <th class="text-sm font-bold">Nom complet</th>
@@ -31,9 +32,9 @@ class BackUserView extends View {
                         <th class="text-sm font-bold">Vérifié</th>
                         <th class="text-sm font-bold">Actions</th>
                     </tr>
-                    </thead>
-                    <tbody>
-                    <?php foreach ($users as $user): ?>
+                </thead>
+                <tbody>
+                    <?php foreach ($userList as $user): ?>
                         <tr>
                             <td><?= htmlspecialchars($user->getUserId()) ?></td>
                             <td>
@@ -48,16 +49,12 @@ class BackUserView extends View {
                             </td>
                             <td><?= htmlspecialchars($user->getMail()) ?></td>
                             <td>
-                                <?php switch($user->getRoleId()):
-                                    case 1: ?>
-                                        <span class="badge badge-primary">Admin</span>
-                                        <?php break; ?>
-                                    <?php case 2: ?>
-                                        <span class="badge badge-secondary">Éditeur</span>
-                                        <?php break; ?>
-                                    <?php default: ?>
-                                        <span class="badge badge-ghost">Utilisateur</span>
-                                    <?php endswitch; ?>
+                                <?php foreach ($rolesList as $role): ?>
+                                    <?php if ($role->getRoleId() === $user->getRoleId()): ?>
+                                        <span class="badge badge-primary"><?= htmlspecialchars($role->getRole()) ?></span>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+
                             </td>
                             <td>
                                 <?php if ($user->isVerified()): ?>
@@ -68,32 +65,32 @@ class BackUserView extends View {
                             </td>
                             <td class="flex gap-2">
                                 <label for="edit-user-modal"
-                                       class="btn btn-sm btn-info"
-                                       data-user-id="<?= $user->getUserId() ?>"
-                                       data-first-name="<?= htmlspecialchars($user->getFirstName()) ?>"
-                                       data-last-name="<?= htmlspecialchars($user->getLastName()) ?>"
-                                       data-nick-name="<?= htmlspecialchars($user->getNickName()) ?>"
-                                       data-mail="<?= htmlspecialchars($user->getMail()) ?>"
-                                       data-role-id="<?= $user->getRoleId() ?>"
-                                       data-verified="<?= $user->isVerified() ? 'true' : 'false' ?>"
-                                       onclick="populateEditForm(this)">
+                                    class="btn btn-sm btn-info"
+                                    data-user-id="<?= $user->getUserId() ?>"
+                                    data-first-name="<?= htmlspecialchars($user->getFirstName()) ?>"
+                                    data-last-name="<?= htmlspecialchars($user->getLastName()) ?>"
+                                    data-nick-name="<?= htmlspecialchars($user->getNickName()) ?>"
+                                    data-mail="<?= htmlspecialchars($user->getMail()) ?>"
+                                    data-role-id="<?= $user->getRoleId() ?>"
+                                    data-verified="<?= $user->isVerified() ? 'true' : 'false' ?>"
+                                    onclick="populateEditForm(this)">
                                     Modifier
                                 </label>
                                 <button class="btn btn-sm btn-error"
-                                        onclick="confirmDelete(<?= $user->getUserId() ?>)">
+                                    onclick="confirmDelete(<?= $user->getUserId() ?>)">
                                     Supprimer
                                 </button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
+        </div>
 
-            <!-- Modals -->
-            <?php $this->renderAddModal(); ?>
-            <?php $this->renderEditModal(); ?>
-            <?php $this->renderDeleteModal(); ?>
+        <!-- Modals -->
+        <?php $this->renderAddModal(); ?>
+        <?php $this->renderEditModal($rolesList); ?>
+        <?php $this->renderDeleteModal(); ?>
 
         <script>
             function confirmDelete(userId) {
@@ -113,13 +110,13 @@ class BackUserView extends View {
             }
         </script>
 
-        <?php
+    <?php
         $contentPage = ob_get_clean();
         (new BackOfficePageView($contentPage, 'Utilisateurs Admin', "Ceci est la page de gestion des utilisateurs.", ['backoffice']))->show();
     }
-
-    private function renderAddModal() {
-        ?>
+    private function renderAddModal()
+    {
+    ?>
         <input type="checkbox" id="add-user-modal" class="modal-toggle" />
         <div class="modal">
             <div class="modal-box w-11/12 max-w-5xl">
@@ -187,11 +184,12 @@ class BackUserView extends View {
                 </form>
             </div>
         </div>
-        <?php
+    <?php
     }
 
-    private function renderEditModal() {
-        ?>
+    private function renderEditModal($rolesList)
+    {
+    ?>
         <input type="checkbox" id="edit-user-modal" class="modal-toggle" />
         <div class="modal">
             <div class="modal-box w-11/12 max-w-5xl">
@@ -240,9 +238,9 @@ class BackUserView extends View {
                                 <span class="label-text">Rôle</span>
                             </label>
                             <select name="roleId" id="edit-roleId" class="select select-bordered">
-                                <option value="1">Admin</option>
-                                <option value="2">Éditeur</option>
-                                <option value="3">Utilisateur</option>
+                                <?php foreach ($rolesList as $role): ?>
+                                    <option value=<?= $role->getRoleId() ?>><?= $role->getRole() ?> </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
@@ -261,11 +259,12 @@ class BackUserView extends View {
                 </form>
             </div>
         </div>
-        <?php
+    <?php
     }
 
-    private function renderDeleteModal() {
-        ?>
+    private function renderDeleteModal()
+    {
+    ?>
         <input type="checkbox" id="delete-modal" class="modal-toggle" />
         <div class="modal">
             <div class="modal-box">
@@ -280,7 +279,7 @@ class BackUserView extends View {
                 </form>
             </div>
         </div>
-        <?php
+<?php
     }
 }
 ?>

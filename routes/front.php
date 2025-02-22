@@ -13,6 +13,7 @@ $router->addRoute('GET', '/register',  'AuthController#showRegisterForm', '');
 $router->addRoute('GET', '/admin',  'BackOfficeController#execute');
 $router->addRoute('GET', '/admin/users',  'BackUserController#execute');
 $router->addRoute('GET', '/admin/users/{id}', 'BackUserEditProfileController#execute',);
+
 $router->addRoute('GET', '/admin/categories',  'BackCategoryController#execute');
 $router->addRoute('GET', '/admin/products',  'BackProductController#execute');
 $router->addRoute('GET', '/admin/articles',  'BackArticleController#execute');
@@ -21,3 +22,6 @@ $router->addRoute('GET', '/admin/articles/edit/{id}',  'BackArticleController#cr
 
 //Basket
 $router->addRoute('GET', '/panier',  'BasketController#execute');
+
+//dasboard
+$router->addRoute('GET', '/liste-des-utilisateurs',  'DashboardController#userList');

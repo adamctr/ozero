@@ -7,11 +7,14 @@ class NavbarView extends View
     {
         $user = new SessionController();
         $subtotal = 0;
-        foreach ($_SESSION['cart'] as $product) {
-            $subtotal += $product['price'] * $product['quantity'];
-        };
+        $products = 0;
+        if (isset($_SESSION['cart'])) {
+            $products = count($_SESSION['cart']);
+            foreach ($_SESSION['cart'] as $product) {
+                $subtotal += $product['price'] * $product['quantity'];
+            };
+        }
 
-        $products = count($_SESSION['cart']);
         ob_start(); // Commence la mise en mémoire tampon du contenu
 ?>
 
@@ -116,6 +119,7 @@ class NavbarView extends View
                             </li>
                             <li><a>Profile</a></li>
                             <li><a>Settings</a></li>
+                            <li><a href="/admin/users">Liste Utilisateurs</a></li>
                             <li>
                                 <form id="logoutForm" action="/logout" method="POST" style="display: inline;">
                                     <button type="submit" style="background: none; border: none; cursor: pointer; padding: 0; color: inherit;">
