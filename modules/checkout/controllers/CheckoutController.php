@@ -12,45 +12,29 @@ class CheckoutController
         $view->show();
     }
 
+    public function testCheckout() {}
+
     public function postCheckoutSession()
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         try {
             \Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
 
-            $cartMap = $_POST['cart'];
-            $cart = [
-                [
+            $cart = [];
+            foreach ($_SESSION['cart'] as $product) {
+                $cart[] = [
                     'price_data' => [
                         'currency' => 'eur',
                         'product_data' => [
-                            'name' => 'Produit 1',
+                            'name' => $product['product'],
                         ],
-                        'unit_amount' => 2000,
+                        'unit_amount' => $product['price'] * 100,
                     ],
-                    'quantity' => 1,
-                ],
-                [
-                    'price_data' => [
-                        'currency' => 'eur',
-                        'product_data' => [
-                            'name' => 'Produit 2',
-                        ],
-                        'unit_amount' => 3000,
-                    ],
-                    'quantity' => 1,
-                ],
-                [
-                    'price_data' => [
-                        'currency' => 'eur',
-                        'product_data' => [
-                            'name' => 'Produit 3',
-                        ],
-                        'unit_amount' => 4000,
-                    ],
-                    'quantity' => 1,
-                ]
-            ];
-
+                    'quantity' => $product['quantity'],
+                ];
+            }
             $session = \Stripe\Checkout\Session::create([
                 'ui_mode' => 'embedded',
                 'payment_method_types' => ['card'],

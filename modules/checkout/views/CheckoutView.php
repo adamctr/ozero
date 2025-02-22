@@ -42,6 +42,4 @@ class CheckoutView extends View
         </section>
 <?php
     }
-
-    public function cart() {}
 }

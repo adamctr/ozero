@@ -18,3 +18,6 @@ $router->addRoute('GET', '/admin/products',  'BackProductController#execute');
 $router->addRoute('GET', '/admin/articles',  'BackArticleController#execute');
 $router->addRoute('GET', '/admin/articles/create',  'BackArticleController#create');
 $router->addRoute('GET', '/admin/articles/edit/{id}',  'BackArticleController#create');
+
+//Basket
+$router->addRoute('GET', '/panier',  'BasketController#execute');

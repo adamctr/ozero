@@ -20,7 +20,8 @@ $router->addRoute('POST', '/admin/articles/uploadimage', 'ArticleController#uplo
 $router->addRoute('POST', '/admin/articles/create', 'ArticleController#create');
 $router->addRoute('POST', '/admin/articles/update/{id}', 'ArticleController#update');
 
-
-$router->addRoute('POST', '/panier/checkoutsession', 'CheckoutController#execute');
+// Panier
+$router->addRoute('POST', '/panier/checkoutsession', 'CheckoutController#postCheckoutSession');
 $router->addRoute('GET', '/panier/checkoutsession', 'CheckoutController#getCheckoutSession');
 $router->addRoute('GET', '/panier/checkoutsessionsuccess', 'CheckoutController#getCheckoutSuccess');
+$router->addRoute('POST', '/panier/add', 'BasketController#cart');

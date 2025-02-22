@@ -1,11 +1,19 @@
 <?php
 
-class NavbarView extends View {
+class NavbarView extends View
+{
 
-    public function show() {
+    public function show()
+    {
         $user = new SessionController();
+        $subtotal = 0;
+        foreach ($_SESSION['cart'] as $product) {
+            $subtotal += $product['price'] * $product['quantity'];
+        };
+
+        $products = count($_SESSION['cart']);
         ob_start(); // Commence la mise en mémoire tampon du contenu
-        ?>
+?>
 
         <div class="navbar bg-base-100">
             <div class="navbar-start">
@@ -39,7 +47,7 @@ class NavbarView extends View {
                         <li><a>Item 3</a></li>
                     </ul>
                 </div>
-                <a class="btn btn-ghost text-xl">Ozero</a>
+                <a href="/" class="btn btn-ghost text-xl">Ozero</a>
             </div>
 
             <div class="navbar-center hidden lg:flex">
@@ -75,17 +83,17 @@ class NavbarView extends View {
                                         stroke-width="2"
                                         d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
-                                <span class="badge badge-sm indicator-item">8</span>
+                                <span class="badge badge-sm indicator-item"><?= $products ?></span>
                             </div>
                         </div>
                         <div
                             tabindex="0"
                             class="card card-compact dropdown-content bg-base-100 z-[1] mt-3 w-52 shadow">
                             <div class="card-body">
-                                <span class="text-lg font-bold">8 Items</span>
-                                <span class="text-info">Subtotal: $999</span>
+                                <span class="text-lg font-bold"><?= $products ?></span>
+                                <span class="text-info">Sous-total: <?= $subtotal ?> €</span>
                                 <div class="card-actions">
-                                    <button class="btn btn-primary btn-block">View cart</button>
+                                    <a href="/panier" class="btn btn-primary btn-block">Voir le panier</a>
                                 </div>
                             </div>
                         </div>
@@ -97,7 +105,8 @@ class NavbarView extends View {
                         <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
                             <div class="w-10 rounded-full relative">
                                 <svg width="24px" height="24px" class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5 21C5 17.134 8.13401 14 12 14C15.866 14 19 17.134 19 21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>                            </div>
+                                    <path d="M5 21C5 17.134 8.13401 14 12 14C15.866 14 19 17.134 19 21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </div>
                         </div>
                         <ul
                             tabindex="0"
@@ -122,7 +131,7 @@ class NavbarView extends View {
             </div>
         </div>
 
-        <?php
+<?php
         return ob_get_clean();
     }
 }

@@ -1,17 +1,19 @@
 <?php
 
-class HomepageView extends View {
+class HomepageView extends View
+{
 
-    public function show() {
+    public function show()
+    {
         ob_start();
-        ?>
+?>
 
         <!-- Hero Section -->
         <div class="max-w-5xl mx-auto my-8 md:my-16 px-4 hero min-h-lg">
             <div class="hero-content flex-col lg:flex-row">
                 <img
-                        src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
-                        class="max-w-sm rounded-lg shadow-2xl" />
+                    src="https://img.daisyui.com/images/stock/photo-1635805737707-575885ab0820.webp"
+                    class="max-w-sm rounded-lg shadow-2xl" />
                 <div>
                     <h1 class="text-5xl font-bold">Box Office News!</h1>
                     <p class="py-6">
@@ -130,10 +132,9 @@ class HomepageView extends View {
 
 
 
-        <?php
+<?php
         $contentPage = ob_get_clean();
         (new FrontPageView($contentPage, 'Accueil', "Ceci est la page d'accueil", ['debug']))->show();
-
     }
 }
 ?>
