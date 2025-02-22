@@ -3,36 +3,45 @@
 class CheckoutView extends View
 {
 
-    public function getCheckoutSession()
-    {
-        $stripe = new \Stripe\StripeClient($_ENV['STRIPE_SECRET_KEY']);
-        header('Content-Type: application/json');
-        $YOUR_DOMAIN = 'http://localhost:8000';
 
-        $checkout_session = $stripe->checkout->sessions->create([
-            'ui_mode' => 'embedded',
-            'line_items' => [[
-                # Provide the exact Price ID (e.g. pr_1234) of the product you want to sell
-                'price' => $priceId,
-                'quantity' => 1,
-            ]],
-            'mode' => 'payment',
-            'return_url' => $YOUR_DOMAIN . '/panier/checkoutsessionsuccess?session_id={CHECKOUT_SESSION_ID}',
-        ]);
-        echo json_encode(array('clientSecret' => $checkout_session->client_secret));
-    }
 
     public function show()
     {
 ?>
-
-
         <div id="checkout">
         </div>
 
         <script src="https://js.stripe.com/v3/"></script>
         <script src="/scripts/checkout.js" defer></script>
 
+    <?php
+    }
+
+    public function getCheckoutSuccess()
+    {
+    ?>
+        <section id="success" class="hidden">
+            <p>
+                We appreciate your business! A confirmation email will be sent to <span id="customer-email"></span>.
+
+                If you have any questions, please email <a href="mailto:orders@example.com">orders@example.com</a>.
+            </p>
+        </section>
+    <?php
+    }
+
+    public function getCheckoutError()
+    {
+    ?>
+        <section id="error" class="hidden">
+            <p>
+                Quelque chose s'est mal passé <span id="customer-email"></span>.
+
+                If you have any questions, please email <a href="mailto:orders@example.com">orders@example.com</a>.
+            </p>
+        </section>
 <?php
     }
+
+    public function cart() {}
 }

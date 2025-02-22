@@ -5,20 +5,29 @@ const stripe = Stripe(
 
 initialize();
 
-// Create a Checkout Session
 async function initialize() {
-    const fetchClientSecret = async () => {
+    try {
         const response = await fetch("/panier/checkoutsession", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
         });
-        const { clientSecret } = await response.json();
-        return clientSecret;
-    };
 
-    const checkout = await stripe.initEmbeddedCheckout({
-        fetchClientSecret,
-    });
+        const data = await response.json();
 
-    // Mount Checkout
-    checkout.mount("#checkout");
+        if (data.error) {
+            console.error("Error:", data.error);
+            return;
+        }
+
+        const checkout = await stripe.initEmbeddedCheckout({
+            clientSecret: data.sessionId,
+        });
+
+        // Mount Checkout
+        checkout.mount("#checkout");
+    } catch (error) {
+        console.error("Error:", error);
+    }
 }

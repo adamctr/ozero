@@ -5,35 +5,80 @@ require_once '../vendor/autoload.php';
 class CheckoutController
 {
 
-    public function execute()
+
+    public function getCheckoutSession()
     {
         $view = new CheckoutView();
         $view->show();
     }
 
-    public function getCheckoutSession()
+    public function postCheckoutSession()
     {
-        // Créer un produit
-        $product = \Stripe\Product::create([
-            'name' => 'Nom du produit',
-            'description' => 'Description du produit',
-        ]);
+        try {
+            \Stripe\Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
 
-        // Créer un tarif pour ce produit
-        $price = \Stripe\Price::create([
-            'product' => $product->id,
-            'unit_amount' => 2000, // Montant en centimes (2000 = 20.00 USD)
-            'currency' => 'usd',
-        ]);
+            $cartMap = $_POST['cart'];
+            $cart = [
+                [
+                    'price_data' => [
+                        'currency' => 'eur',
+                        'product_data' => [
+                            'name' => 'Produit 1',
+                        ],
+                        'unit_amount' => 2000,
+                    ],
+                    'quantity' => 1,
+                ],
+                [
+                    'price_data' => [
+                        'currency' => 'eur',
+                        'product_data' => [
+                            'name' => 'Produit 2',
+                        ],
+                        'unit_amount' => 3000,
+                    ],
+                    'quantity' => 1,
+                ],
+                [
+                    'price_data' => [
+                        'currency' => 'eur',
+                        'product_data' => [
+                            'name' => 'Produit 3',
+                        ],
+                        'unit_amount' => 4000,
+                    ],
+                    'quantity' => 1,
+                ]
+            ];
 
-        $priceId = $price->id;
-        $view = new CheckoutView();
-        $view->getCheckoutSession();
+            $session = \Stripe\Checkout\Session::create([
+                'ui_mode' => 'embedded',
+                'payment_method_types' => ['card'],
+                'line_items' => $cart,
+                'mode' => 'payment',
+                'return_url' => 'http://localhost:8000/panier/checkoutsessionsuccess?session_id={CHECKOUT_SESSION_ID}'
+            ]);
+
+            header('Content-Type: application/json');
+            echo json_encode(['sessionId' => $session->client_secret]);
+        } catch (\Exception $e) {
+            error_log($e->getMessage()); // Log the error
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
     }
+
+
 
     public function getCheckoutSuccess()
     {
-        $view = new SuccessView();
+        $view = new CheckoutView();
         $view->getCheckoutSuccess();
+    }
+
+    public function getCheckoutError()
+    {
+        $view = new CheckoutView();
+        $view->getCheckoutError();
     }
 }

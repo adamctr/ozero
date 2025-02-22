@@ -7,7 +7,7 @@ $router->addRoute('GET', '/blog',  'ArticleController#showBlog');
 $router->addRoute('GET', '/articles/{id}',  'ArticleController#execute');
 $router->addRoute('GET', '/login',  'AuthController#showLoginForm', '');
 $router->addRoute('GET', '/register',  'AuthController#showRegisterForm', '');
-$router->addRoute('GET', '/checkout',  'CheckoutController#execute', '');
+
 
 // BackOffice
 $router->addRoute('GET', '/admin',  'BackOfficeController#execute');

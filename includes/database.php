@@ -7,15 +7,16 @@ class Database
 
     private function __construct()
     {
-        $config = array(
-            'host' => $_ENV['DB_HOST'],
-            'dbname' => $_ENV['DB_NAME'],
-            'port' => $_ENV['DB_PORT'],
-            'user' => $_ENV['DB_USER'],
-            'password' => $_ENV['DB_PASSWORD'],
-            'charset' => $_ENV['DB_CHARSET'],
-        );
-        $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['dbname']};charset=utf8mb4";
+        try {
+            $config = array(
+                'host' => $_ENV['DB_HOST'],
+                'dbname' => $_ENV['DB_NAME'],
+                'port' => $_ENV['DB_PORT'],
+                'user' => $_ENV['DB_USER'],
+                'password' => $_ENV['DB_PASSWORD'],
+                'charset' => $_ENV['DB_CHARSET'],
+            );
+            $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['dbname']};charset=utf8mb4";
 
             $options = [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
@@ -24,8 +25,7 @@ class Database
             ];
 
             $this->connection = new PDO($dsn, $config['user'], $config['password'], $options);
-        }
-        catch (PDOException $e) {
+        } catch (PDOException $e) {
             throw new Exception("Erreur de connexion à la base de données: " . $e->getMessage());
         }
     }
