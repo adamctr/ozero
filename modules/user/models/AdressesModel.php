@@ -31,7 +31,7 @@ class AdressesModel
         return $result ? new AddressesEntity($result) : null;
     }
 
-    public function createAddress(AddressesEntity $address): void
+    public function createAddress(AddressesEntity $address)
     {
 
         $stmt = $this->db->prepare('INSERT INTO addresses (userId, street, city, zipCode, country, phone, isDefault) VALUES (:userId, :street, :city, :zipCode, :country, :phone, :isDefault)');
@@ -43,9 +43,10 @@ class AdressesModel
         $stmt->bindValue(':phone', $address->getPhone(), PDO::PARAM_STR);
         $stmt->bindValue(':isDefault', $address->getIsDefault(), PDO::PARAM_INT);
         $stmt->execute();
+        return $this->db->lastInsertId();
     }
 
-    public function updateAddress(AddressesEntity $address): void
+    public function updateAddress(AddressesEntity $address)
     {
         $stmt = $this->db->prepare('UPDATE addresses SET street = :street, city = :city, zipCode = :zipCode, country = :country, phone = :phone, isDefault = :isDefault WHERE userId = :userId');
         $stmt->bindValue(':userId', $address->getUserId(), PDO::PARAM_INT);
@@ -56,5 +57,6 @@ class AdressesModel
         $stmt->bindValue(':phone', $address->getPhone(), PDO::PARAM_STR);
         $stmt->bindValue(':isDefault', $address->getIsDefault(), PDO::PARAM_INT);
         $stmt->execute();
+        return $this->db->lastInsertId();
     }
 }

@@ -41,12 +41,12 @@ class ProfileView extends View
             <div class="flex gap-2">
                 <label for="edit-address-modal"
                     class="btn btn-sm btn-info"
-                    data-user-id="<?= $addresse->getUserId() ?>"
-                    data-street="<?= htmlspecialchars($addresse->getStreet()) ?>"
-                    data-zipCode="<?= htmlspecialchars($addresse->getZipCode()) ?>"
-                    data-city="<?= htmlspecialchars($addresse->getCity()) ?>"
-                    data-country="<?= htmlspecialchars($addresse->getCountry()) ?>"
-                    data-phone="<?= $addresse->getPhone() ?>"
+                    data-user-id="<?= $user->getUserId() ?>"
+                    data-street="<?= $addresse ? htmlspecialchars($addresse->getStreet()) ?? '' : '' ?>"
+                    data-zipCode="<?= $addresse ? htmlspecialchars($addresse->getZipCode()) ?? '' : '' ?>"
+                    data-city="<?= $addresse ? htmlspecialchars($addresse->getCity()) ?? '' : '' ?>"
+                    data-country="<?= $addresse ? htmlspecialchars($addresse->getCountry()) ?? '' : '' ?>"
+                    data-phone="<?= $addresse ? $addresse->getPhone() ?? '' : '' ?>"
                     data-role-id="<?= $user->getRoleId() ?>"
                     onclick="populateAddressForm(this)">
                     Modifier addresse

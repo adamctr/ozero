@@ -23,6 +23,7 @@ class UserController
     // Affiche le formulaire d'édition
     public function Profile()
     {
+        var_dump($_SESSION, $_COOKIE);
         $jwtManager = new JWT();
         $userId = $jwtManager->getUserIdFromJWT();
 

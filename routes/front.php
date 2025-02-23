@@ -22,6 +22,8 @@ $router->addRoute('GET', '/admin/articles/edit/{id}',  'BackArticleController#cr
 
 //Basket
 $router->addRoute('GET', '/panier',  'BasketController#execute');
+$router->addRoute('GET', '/test-panier',  'BasketController#testPanier');
+$router->addRoute('GET', '/panier/livraison',  'BasketController#shippin');
 
 //dasboard
 $router->addRoute('GET', '/liste-des-utilisateurs',  'DashboardController#userList');

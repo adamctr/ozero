@@ -27,7 +27,7 @@ class BackUserEditProfileController
                 $_POST['lastName'],
                 $_POST['nickName'],
                 $_POST['mail'],
-                $_POST['password'] ?? null,
+                password_hash($_POST['password'], PASSWORD_DEFAULT) ?? null,
                 true,
                 null,
                 $_POST['roleId'] ?? null,

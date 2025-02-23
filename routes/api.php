@@ -27,4 +27,6 @@ $router->addRoute('POST', '/admin/articles/update/{id}', 'ArticleController#upda
 $router->addRoute('POST', '/panier/checkoutsession', 'CheckoutController#postCheckoutSession');
 $router->addRoute('GET', '/panier/checkoutsession', 'CheckoutController#getCheckoutSession');
 $router->addRoute('GET', '/panier/checkoutsessionsuccess', 'CheckoutController#getCheckoutSuccess');
-$router->addRoute('POST', '/panier/add', 'BasketController#cart');
+$router->addRoute('POST', '/panier/confirmation', 'BasketController#confirmation');
+$router->addRoute('POST', '/panier/add', 'BasketController#addTocart');
+$router->addRoute('POST', '/panier/checkConnect', 'BasketController#checkConnect');
