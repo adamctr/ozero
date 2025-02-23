@@ -15,6 +15,10 @@ class FrontPageView
 
         $navbar = new NavbarView();
         $footer = new FooterView();
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 ?>
         <!doctype html>
         <html lang="fr">

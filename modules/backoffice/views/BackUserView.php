@@ -8,6 +8,8 @@ class BackUserView extends View
 
 
         ob_start();
+
+
 ?>
         <!-- Main Content -->
         <div class="flex flex-col gap-4 justify-between items-center mb-6">
@@ -86,33 +88,13 @@ class BackUserView extends View
                 </tbody>
             </table>
         </div>
-
         <!-- Modals -->
-        <?php $this->renderAddModal(); ?>
-        <?php $this->renderEditModal($rolesList); ?>
-        <?php $this->renderDeleteModal(); ?>
+    <?php $this->renderAddModal();
+        $this->renderEditModal($rolesList);
+        $this->renderDeleteModal();
 
-        <script>
-            function confirmDelete(userId) {
-                document.getElementById('delete-user-id').value = userId;
-                document.getElementById('delete-modal').checked = true;
-            }
-
-            function populateEditForm(button) {
-                const dataset = button.dataset;
-                document.getElementById('edit-user-id').value = dataset.userId;
-                document.getElementById('edit-firstName').value = dataset.firstName;
-                document.getElementById('edit-lastName').value = dataset.lastName;
-                document.getElementById('edit-nickName').value = dataset.nickName;
-                document.getElementById('edit-mail').value = dataset.mail;
-                document.getElementById('edit-roleId').value = dataset.roleId;
-                document.getElementById('edit-verified').checked = dataset.verified === 'true';
-            }
-        </script>
-
-    <?php
         $contentPage = ob_get_clean();
-        (new BackOfficePageView($contentPage, 'Utilisateurs Admin', "Ceci est la page de gestion des utilisateurs.", ['backoffice']))->show();
+        (new BackOfficePageView($contentPage, 'Utilisateurs Admin', "Ceci est la page de gestion des utilisateurs.", ['backoffice', 'updateUsers']))->show();
     }
     private function renderAddModal()
     {

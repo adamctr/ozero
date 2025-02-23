@@ -117,7 +117,7 @@ class NavbarView extends View
                             <li>
                                 <h4>Bonjour, <span class="font-bold"><?= ucfirst($user->getFirstName()) ?></span></h4>
                             </li>
-                            <li><a>Profile</a></li>
+                            <li><a href="/profile">Profile</a></li>
                             <li><a>Settings</a></li>
                             <li><a href="/admin/users">Liste Utilisateurs</a></li>
                             <li>

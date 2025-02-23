@@ -22,4 +22,14 @@ class RoleModel
         }
         return $roleEntities;
     }
+
+    public function getRoleById(int $roleId): ?string
+    {
+        $stmt = $this->db->prepare("SELECT role FROM roles WHERE roleId = :roleId");
+        $stmt->bindParam(':roleId', $roleId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['role'] : null;
+    }
 }

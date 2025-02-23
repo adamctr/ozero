@@ -14,7 +14,8 @@ $router->addRoute('POST', '/admin/products/deleteimage', 'ProductController#dele
 
 // Utilisateurs
 $router->addRoute('POST', '/admin/users/add', 'UserController#addUser');
-$router->addRoute('POST', '/admin/users/update', 'BackUserEditProfileController#updateUser');
+$router->addRoute('POST', '/admin/users/update', 'BackUserEditProfileController#updateUserGeneralInfo');
+$router->addRoute('POST', '/admin/users/updateAddresse', 'BackUserEditProfileController#updateUserAdresse');
 $router->addRoute('POST', '/admin/users/create', 'BackUserController#createUser',);
 
 // Articles
