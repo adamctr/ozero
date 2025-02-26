@@ -13,23 +13,27 @@ class BasketController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-
-        for ($i = 0; $i < count($_POST['product']); $i++) {
-            $product = $_POST['product'][$i];
-            $price = $_POST['price'][$i];
-            $quantity = $_POST['quantity'][$i];
-            if (isset($_SESSION['cart'][$product])) {
-                $i++;
-            } else {
-                $_SESSION['cart'][$product] = [
-                    'product' => $product,
-                    'price' => $price,
-                    'quantity' => $quantity
-                ];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            for ($i = 0; $i < count($_POST['product']); $i++) {
+                $product = $_POST['product'][$i];
+                $price = $_POST['price'][$i];
+                $quantity = $_POST['quantity'][$i];
+                if (isset($_SESSION['cart'][$product])) {
+                    $i++;
+                } else {
+                    $_SESSION['cart'][$product] = [
+                        'product' => $product,
+                        'price' => $price,
+                        'quantity' => $quantity
+                    ];
+                }
             }
+            $view = new BasketView();
+            $view->show();
+        } else {
+            $view = new page404View();
+            $view->show();
         }
-        $view = new BasketView();
-        $view->show();
     }
 
     public function testPanier()
@@ -40,7 +44,12 @@ class BasketController
 
     public function checkConnect()
     {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION['totalAmount'] = $_POST['totalAmount'];
         try {
+
             if (!isset($_COOKIE['auth_token'])) {
                 header('Location: /login');
             } else {
@@ -68,11 +77,11 @@ class BasketController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        $street = $_POST['street'];
-        $city = $_POST['city'];
-        $zipCode = $_POST['zipCode'];
-        $country = $_POST['country'];
-        $phone = $_POST['phone'];
+        $street = htmlspecialchars($_POST['street']);
+        $city = htmlspecialchars($_POST['city']);
+        $zipCode = htmlspecialchars($_POST['zipCode']);
+        $country = htmlspecialchars($_POST['country']);
+        $phone = htmlspecialchars($_POST['phone']);
         $_SESSION['addresse'] = [
             'street' => $street,
             'city' => $city,

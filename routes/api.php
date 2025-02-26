@@ -30,3 +30,4 @@ $router->addRoute('GET', '/panier/checkoutsessionsuccess', 'CheckoutController#g
 $router->addRoute('POST', '/panier/confirmation', 'BasketController#confirmation');
 $router->addRoute('POST', '/panier/add', 'BasketController#addTocart');
 $router->addRoute('POST', '/panier/checkConnect', 'BasketController#checkConnect');
+$router->addRoute('POST', '/panier/confirmationBeforePayment', 'CheckoutController#postConfirmationBeforePayment');

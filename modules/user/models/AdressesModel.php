@@ -27,7 +27,6 @@ class AdressesModel
         $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetch();
-
         return $result ? new AddressesEntity($result) : null;
     }
 
@@ -58,5 +57,18 @@ class AdressesModel
         $stmt->bindValue(':isDefault', $address->getIsDefault(), PDO::PARAM_INT);
         $stmt->execute();
         return $this->db->lastInsertId();
+    }
+
+    public function foundAddress(AddressesEntity $addressesEntity): int | null
+    {
+        $stmt = $this->db->prepare('SELECT addressId FROM addresses WHERE street = :street AND city = :city AND zipCode = :zipCode AND country = :country AND phone = :phone');
+        $stmt->bindValue(':street', $addressesEntity->getStreet(), PDO::PARAM_STR);
+        $stmt->bindValue(':city', $addressesEntity->getCity(), PDO::PARAM_STR);
+        $stmt->bindValue(':zipCode', $addressesEntity->getZipCode(), PDO::PARAM_STR);
+        $stmt->bindValue(':country', $addressesEntity->getCountry(), PDO::PARAM_STR);
+        $stmt->bindValue(':phone', $addressesEntity->getPhone(), PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result ? $result['addressId'] : null;
     }
 }

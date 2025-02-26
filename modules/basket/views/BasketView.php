@@ -5,6 +5,7 @@ class BasketView extends View
     public function show()
     {
         ob_start();
+        $totalAmount = 0;
 ?>
         <h1 class="text-5xl font-bold text-center">Panier</h1>
         <form action="/panier/checkConnect" method="post">
@@ -51,10 +52,17 @@ class BasketView extends View
                                     </label>
                                 </th>
                             </tr>
-                        <?php } ?>
+                        <?php }
+                        foreach ($_SESSION['cart'] as $cart) {
+                            $totalAmount += $cart['price'] * $cart['quantity'];
+                        } ?>
                 </table>
             </div>
             <div class="text-center">
+                <p class="text-2xl">
+                    Total : <?= $totalAmount ?> €
+                    <input type="hidden" name="totalAmount" id="totalAmount" value=<?= $totalAmount ?>>
+                </p>
                 <button type="submit" class="my-5 btn btn-accent">Commander</button>
             </div>
         </form>
@@ -76,28 +84,28 @@ class BasketView extends View
                     <label class="label">
                         <span class="label-text">Adresse</span>
                     </label>
-                    <input type="text" name="street" id="edit-street" class="input input-bordered" value=<?= $addresse instanceof AddressesEntity ? htmlspecialchars($addresse->getStreet() ?? '') : '' ?>>
+                    <input type="text" name="street" id="edit-street" class="input input-bordered" value="<?= $addresse instanceof AddressesEntity ? $addresse->getStreet() ?? '' : '' ?>">
                 </div>
 
-                <div class="form-control">
+                <div class=" form-control">
                     <label class="label">
                         <span class="label-text">Code postal</span>
                     </label>
-                    <input required type="text" name="zipCode" id="edit-zipCode" class="input input-bordered" value=<?= $addresse instanceof AddressesEntity ? htmlspecialchars($addresse->getZipCode() ?? '') : '' ?>>
+                    <input required type="text" name="zipCode" id="edit-zipCode" class="input input-bordered" value=<?= $addresse instanceof AddressesEntity ? $addresse->getZipCode() ?? '' : '' ?>>
                 </div>
 
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text">Ville</span>
                     </label>
-                    <input required type="text" name="city" id="edit-city" class="input input-bordered" value=<?= $addresse instanceof AddressesEntity ? htmlspecialchars($addresse->getCity() ?? '') : '' ?>>
+                    <input required type="text" name="city" id="edit-city" class="input input-bordered" value=<?= $addresse instanceof AddressesEntity ? $addresse->getCity() ?? '' : '' ?>>
                 </div>
 
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text">Pays</span>
                     </label>
-                    <input required type="text" name="country" id="edit-country" class="input input-bordered" value=<?= $addresse instanceof AddressesEntity ? htmlspecialchars($addresse->getCountry() ?? '') : '' ?>>
+                    <input required type="text" name="country" id="edit-country" class="input input-bordered" value=<?= $addresse instanceof AddressesEntity ? $addresse->getCountry() ?? '' : '' ?>>
                 </div>
 
                 <div class="form-control">
@@ -177,8 +185,10 @@ class BasketView extends View
             <p><?= $_SESSION['addresse']['country'] ?></p>
             <p><?= $_SESSION['addresse']['phone'] ?></p>
         </div>
+        <form action="/panier/confirmationBeforePayment" method="post">
 
-        <a href="/panier/checkoutsession" class="btn">Commander</a>
+            <button type="submit" class="btn">Commander</button>
+        </form>
 <?php
         $contentPage = ob_get_clean();
         (new FrontPageView($contentPage, 'Confirmation', "Confirmation de la commande", ['debug']))->show();

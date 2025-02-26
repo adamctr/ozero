@@ -8,7 +8,7 @@ class PurchaseEntity
     private float $totalAmount;
     private string $status;
     private int $addressId;
-    private int $paymentMethod;
+    private string $paymentMethod;
 
     public function __construct(array $data)
     {
@@ -79,11 +79,11 @@ class PurchaseEntity
         $this->addressId = $addressId;
         return $this;
     }
-    public function getPaymentMethod(): int
+    public function getPaymentMethod(): string
     {
         return $this->paymentMethod;
     }
-    public function setPaymentMethod(int $paymentMethod): self
+    public function setPaymentMethod(string $paymentMethod): self
     {
         $this->paymentMethod = $paymentMethod;
         return $this;

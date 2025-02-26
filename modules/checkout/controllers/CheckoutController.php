@@ -9,7 +9,6 @@ class CheckoutController
     public function getCheckoutSession()
     {
 
-        var_dump($_SESSION);
         $view = new CheckoutView();
         $view->show();
     }
@@ -54,6 +53,46 @@ class CheckoutController
         }
     }
 
+    public function postConfirmationBeforePayment()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $jwtManager = new JWT();
+        $userId = $jwtManager->getUserIdFromJWT();
+
+        $addresse = new AddressesEntity([
+            'userId' => $userId,
+            'street' => $_SESSION['addresse']['street'],
+            'city' => $_SESSION['addresse']['city'],
+            'zipCode' => $_SESSION['addresse']['zipCode'],
+            'country' => $_SESSION['addresse']['country'],
+            'phone' => $_SESSION['addresse']['phone'],
+        ]);
+
+        $addressesModel = new AdressesModel();
+        $checkAddress = $addressesModel->foundAddress($addresse);
+        $addresseConfirmed = ($checkAddress == null) ?
+            $addressesModel->createAddress($addresse) :
+            $checkAddress;
+
+        $purchase = new PurchaseEntity([
+            'userId' => $userId,
+            'status' => 'panier',
+            'addressId' => $addresseConfirmed,
+            'paymentMethod' => 'CB',
+            'totalAmount' => $_SESSION['totalAmount'],
+        ]);
+
+        $purchaseModel = new PurchaseModel();
+        $purchaseId = $purchaseModel->newPurchase($purchase);
+        $_SESSION['purchaseId'] = $purchaseId;
+
+        $view = new CheckoutView();
+        $view->show();
+    }
+
 
 
     public function getCheckoutSuccess()
@@ -61,34 +100,12 @@ class CheckoutController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-
-        $jwtManager = new JWT();
-
-        $addresse = new AddressesEntity([
-            'userId' => $jwtManager->getUserIdFromJWT(),
-            'address' => $_SESSION['address'],
-            'city' => $_SESSION['city'],
-            'zipCode' => $_SESSION['zipCode'],
-            'country' => $_SESSION['country']
-        ]);
-
-        $addressesModel = new AdressesModel();
-        $checkAddress = $addressesModel->getAddressesByUserId($jwtManager->getUserIdFromJWT());
-        if ($addressesModel->getAddressesByUserId($_POST['userId']) == $addresse) {
-            $adresseConfirmed = $addressesModel->updateAddress($addresse);
-        } else {
-            $adresseConfirmed = $addressesModel->createAddress($addresse);
-        }
-
-        $purchase = new PurchaseEntity([
-            'userId' => $jwtManager->getUserIdFromJWT(),
-            'status' => 'En attente',
-            'addressId' => $adresseConfirmed,
-            'paymentMethod' => 'CB'
-        ]);
         $purchaseModel = new PurchaseModel();
-        $purchaseModel->newPurchase($purchase);
-        var_dump($_SESSION, $_POST, $_COOKIE);
+        $purchaseModel->updatePurchaseStatus($_SESSION['purchaseId'], 'payé');
+
+        $_SESSION['cart'] = [];
+
+        var_dump($_SESSION);
         $view = new CheckoutView();
         $view->getCheckoutSuccess();
     }
