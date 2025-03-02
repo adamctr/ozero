@@ -18,4 +18,17 @@ class PurchaseDetailsModel
         $stmt->bindValue(':unitPrice', $purchaseDetail->getunitPrice(), PDO::PARAM_STR);
         $stmt->execute();
     }
+
+    public function getPurchaseDetailsByPurchaseId($purchaseId): array
+    {
+        $stmt = $this->db->prepare('
+        SELECT * 
+        FROM purchaseDetails 
+        INNER JOIN products p ON p.productId = purchaseDetails.productId 
+        WHERE purchaseId = :purchaseId');
+        $stmt->bindValue(':purchaseId', $purchaseId, PDO::PARAM_INT);
+        $stmt->execute();
+        $datas = $stmt->fetchAll();
+        return $datas;
+    }
 }

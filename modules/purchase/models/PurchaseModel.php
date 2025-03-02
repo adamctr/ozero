@@ -50,4 +50,15 @@ class PurchaseModel
         $result = $stmt->fetch();
         return $result ? new PurchaseEntity($result) : null;
     }
+
+    public function getAllPurchases(): array
+    {
+        $stmt = $this->db->query('SELECT * FROM purchases WHERE status != "panier"');
+        $datas = $stmt->fetchAll();
+        $purchasesList = [];
+        foreach ($datas as $data) {
+            $purchasesList[] = new PurchaseEntity($data);
+        }
+        return $purchasesList;
+    }
 }

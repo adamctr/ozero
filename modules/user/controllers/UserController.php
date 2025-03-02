@@ -118,8 +118,10 @@ class UserController
                     $userId = $jwtManager->getUserIdFromJWT();;
                     $purchaseModel = new PurchaseModel();
                     $purchase = $purchaseModel->getPurchaseById($userId, $this->purchaseId);
+                    $purchaseDetailsModel = new PurchaseDetailsModel();
+                    $purchaseDetails = $purchaseDetailsModel->getPurchaseDetailsByPurchaseId($this->purchaseId);
                     $view = new OrderView();
-                    $view->showOrderDetails($purchase);
+                    $view->showOrderDetails($purchase, $purchaseDetails);
                 }
             }
         } catch (\Exception $e) {

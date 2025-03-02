@@ -20,7 +20,7 @@ class OrderView extends View
             </thead>
             <tbody>
                 <?php foreach ($purchasesList as $purchase) { ?>
-                    <tr class="rows hover:bg-gray-500" id=<?= $purchase->getPurchaseId() ?> ?>>
+                    <tr class="rows hover:bg-gray-500" id=<?= $purchase->getPurchaseId() ?>>
                         <td><?= $purchase->getPurchaseId() ?></td>
                         <td><?= $purchase->getPurchaseDate() ?></td>
                         <td><?= $purchase->getTotalAmount() ?> €</td>
@@ -49,16 +49,15 @@ class OrderView extends View
                 <p>Statut : <?= $status ?></p>
             </div>
         </div>
-        <script src="/scripts/order.js" defer></script>
     <?php
         $content = ob_get_clean();
         (new FrontPageView($content, 'Commande', "Commande", ['debug', 'order']))->show();
     }
 
-    public function showOrderDetails($purchase)
+    public function showOrderDetails($purchase, $purchaseDetails)
     {
         ob_start();
-
+        var_dump($purchaseDetails);
     ?>
         <h1 class="text-5xl font-bold text-center bg-black">Commande</h1>
         <div class="flex flex-col text-center items-center justify-center">
@@ -69,9 +68,29 @@ class OrderView extends View
                 <p>Statut : <?= $purchase->getStatus() ?></p>
 
             </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Prix</th>
+                        <th>Quantité</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($purchaseDetails as $product) { ?>
+                        <tr class="rows hover:bg-gray-500" id="<?= $product['productId'] ?>">
+                            <td><?= $product['product'] ?></td>
+                            <td><?= $product['price'] ?> €</td>
+                            <td><?= $product['quantity'] ?></td>
+                            <td><?= $product['total'] ?> €</td>
+                        </tr>
+                    <?php } ?>
+                </tbody>
+            </table>
         </div>
 <?php
         $content = ob_get_clean();
-        (new FrontPageView($content, 'Commande', "Commande", ['debug']))->show();
+        (new FrontPageView($content, 'Commande', "Commande", ['debug', 'orderDetails']))->show();
     }
 }
