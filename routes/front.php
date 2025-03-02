@@ -25,5 +25,9 @@ $router->addRoute('GET', '/panier',  'BasketController#execute');
 $router->addRoute('GET', '/test-panier',  'BasketController#testPanier');
 $router->addRoute('GET', '/panier/livraison',  'BasketController#shippin');
 
-//dasboard
+//dashboard
 $router->addRoute('GET', '/liste-des-utilisateurs',  'DashboardController#userList');
+
+//Commandes
+$router->addRoute('GET', '/commandes', 'UserController#getOrders');
+$router->addRoute('GET', '/commandes/{purchaseId}', 'UserController#getOrderDetails', 'AuthMiddleware');

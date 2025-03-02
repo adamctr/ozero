@@ -2,28 +2,15 @@
 
 class UserController
 {
+    private $purchaseId;
 
-    public function __construct($userId = null)
+    public function __construct($purchaseId = null)
     {
-        if ($userId !== null) {
-            $userModel = new UserModel();
-            $user = $userModel->getUserById($userId);
-        }
+        $this->purchaseId = $purchaseId;
     }
-
-    /*     public function update()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->processUpdate(); // Si la méthode est POST, on traite la mise à jour
-        } else {
-            $this->showEditForm(); // Sinon, on affiche le formulaire
-        }
-    } */
-
     // Affiche le formulaire d'édition
     public function Profile()
     {
-        var_dump($_SESSION, $_COOKIE);
         $jwtManager = new JWT();
         $userId = $jwtManager->getUserIdFromJWT();
 
@@ -91,6 +78,54 @@ class UserController
         } else {
             // Si la suppression échoue, affiche un message d'erreur
             Utils::sendResponse('error', "Une erreur est survenue lors de la suppression de l'utilisateur");
+        }
+    }
+
+    public function getOrders()
+    {
+        try {
+            if (!isset($_COOKIE['auth_token'])) {
+                header('Location: /login');
+            } else {
+                $jwtManager = new JWT();
+                if (!$jwtManager->getUserIdFromJWT()) {
+                    header('Location: /login');
+                } else {
+                    $userId = $jwtManager->getUserIdFromJWT();
+                    $purchaseModel = new PurchaseModel();
+                    $purchases = $purchaseModel->getAllPurchasesById($userId);
+                    $view = new OrderView();
+                    $view->showOrders($purchases);
+                }
+            }
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function getOrderDetails()
+    {
+        try {
+            if (!isset($_COOKIE['auth_token'])) {
+                header('Location: /login');
+            } else {
+                $jwtManager = new JWT();
+                if (!$jwtManager->getUserIdFromJWT()) {
+                    header('Location: /login');
+                } else {
+                    $userId = $jwtManager->getUserIdFromJWT();;
+                    $purchaseModel = new PurchaseModel();
+                    $purchase = $purchaseModel->getPurchaseById($userId, $this->purchaseId);
+                    $view = new OrderView();
+                    $view->showOrderDetails($purchase);
+                }
+            }
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
         }
     }
 }

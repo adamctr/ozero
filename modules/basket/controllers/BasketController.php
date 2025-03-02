@@ -13,21 +13,26 @@ class BasketController
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+
+        var_dump($_POST);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            for ($i = 0; $i < count($_POST['product']); $i++) {
+            for ($i = 0; $i < count($_POST['productId']); $i++) {
+                $productId = $_POST['productId'][$i];
                 $product = $_POST['product'][$i];
                 $price = $_POST['price'][$i];
                 $quantity = $_POST['quantity'][$i];
-                if (isset($_SESSION['cart'][$product])) {
-                    $i++;
+                if (isset($_SESSION['cart'][$productId])) {
+                    $_SESSION['cart'][$productId]['quantity'] += $quantity;
                 } else {
                     $_SESSION['cart'][$product] = [
+                        'productId' => $productId,
                         'product' => $product,
                         'price' => $price,
                         'quantity' => $quantity
                     ];
                 }
             }
+            /* $_SESSION = []; */
             $view = new BasketView();
             $view->show();
         } else {
@@ -38,8 +43,10 @@ class BasketController
 
     public function testPanier()
     {
+        $productModel = new ProductModel();
+        $productList = $productModel->getAllProducts();
         $view = new TestAddBasketView();
-        $view->show();
+        $view->show($productList);
     }
 
     public function checkConnect()

@@ -118,7 +118,7 @@ class NavbarView extends View
                                 <h4>Bonjour, <span class="font-bold"><?= ucfirst($user->getFirstName()) ?></span></h4>
                             </li>
                             <li><a href="/profile">Profile</a></li>
-                            <li><a>Settings</a></li>
+                            <li><a href="/commandes">Commandes</a></li>
                             <li><a href="/admin/users">Liste Utilisateurs</a></li>
                             <li>
                                 <form id="logoutForm" action="/logout" method="POST" style="display: inline;">

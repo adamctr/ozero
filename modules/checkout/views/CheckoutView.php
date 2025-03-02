@@ -19,6 +19,7 @@ class CheckoutView extends View
 
     public function getCheckoutSuccess()
     {
+        ob_start();
     ?>
         <section id="success" class="hidden">
             <p>
@@ -28,6 +29,9 @@ class CheckoutView extends View
             </p>
         </section>
     <?php
+
+        $content = ob_get_clean();
+        (new FrontPageView($content, 'Confirmation de commande', "Confirmation de commande", ['debug']))->show();
     }
 
     public function getCheckoutError()

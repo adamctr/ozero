@@ -84,9 +84,20 @@ class CheckoutController
             'paymentMethod' => 'CB',
             'totalAmount' => $_SESSION['totalAmount'],
         ]);
-
         $purchaseModel = new PurchaseModel();
+        $productModel = new ProductModel();
         $purchaseId = $purchaseModel->newPurchase($purchase);
+        $purchaseModelDetails = new PurchaseDetailsModel();
+        foreach ($_SESSION['cart'] as $product) {
+            $purchaseDetail = new PurchaseDetailsEntity([
+                'purchaseId' => $purchaseId,
+                'productId' => $product['productId'],
+                'quantity' => $product['quantity'],
+                'unitPrice' => $product['price'],
+            ]);
+            $purchaseModelDetails->newPurchaseDetail($purchaseDetail);
+        }
+
         $_SESSION['purchaseId'] = $purchaseId;
 
         $view = new CheckoutView();
@@ -105,7 +116,6 @@ class CheckoutController
 
         $_SESSION['cart'] = [];
 
-        var_dump($_SESSION);
         $view = new CheckoutView();
         $view->getCheckoutSuccess();
     }

@@ -27,4 +27,27 @@ class PurchaseModel
         $stmt->bindValue(':purchaseId', $purchaseId, PDO::PARAM_INT);
         $stmt->execute();
     }
+
+    public function getAllPurchasesById($userId): array
+    {
+        $stmt = $this->db->prepare('SELECT * FROM purchases WHERE userId = :userId');
+        $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        $datas = $stmt->fetchAll();
+        $purchasesList = [];
+        foreach ($datas as $data) {
+            $purchasesList[] = new PurchaseEntity($data);
+        }
+        return $purchasesList;
+    }
+
+    public function getPurchaseById($userId, $purchaseId): ?PurchaseEntity
+    {
+        $stmt = $this->db->prepare('SELECT * FROM purchases WHERE userId = :userId AND purchaseId = :purchaseId');
+        $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+        $stmt->bindValue(':purchaseId', $purchaseId, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch();
+        return $result ? new PurchaseEntity($result) : null;
+    }
 }

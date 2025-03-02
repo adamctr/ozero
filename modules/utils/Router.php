@@ -18,7 +18,6 @@ class Router
             'target' => $target,
             'middleware' => $middleware,
         ];
-
     }
 
     /**
@@ -49,6 +48,7 @@ class Router
 
                 //MIDDLE WARE
                 if ($route['middleware']) {
+                    require_once __DIR__ . '/../../middlewares/' . $route['middleware'] . '.php';
                     $middlewareInstance = new $route['middleware']();
                     $middlewareInstance->handle();
                 }
@@ -78,7 +78,4 @@ class Router
         http_response_code(404);
         page404View::show();
     }
-
 }
-
-
