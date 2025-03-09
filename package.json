@@ -1,6 +1,9 @@
 {
-  "devDependencies": {
-    "daisyui": "^4.12.23",
-    "tailwindcss": "^3.4.16"
-  }
+    "devDependencies": {
+        "daisyui": "^4.12.24",
+        "tailwindcss": "^3.4.1"
+    },
+    "scripts": {
+        "watch:css": "node ./node_modules/tailwindcss/lib/cli.js -i ./public/style/style.css -o ./public/style/output.css --watch"
+    }
 }

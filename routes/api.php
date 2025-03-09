@@ -14,12 +14,20 @@ $router->addRoute('POST', '/admin/products/deleteimage', 'ProductController#dele
 
 // Utilisateurs
 $router->addRoute('POST', '/admin/users/add', 'UserController#addUser');
+$router->addRoute('POST', '/admin/users/update', 'BackUserEditProfileController#updateUserGeneralInfo');
+$router->addRoute('POST', '/admin/users/updateAddresse', 'BackUserEditProfileController#updateUserAdresse');
+$router->addRoute('POST', '/admin/users/create', 'BackUserController#createUser',);
 
 // Articles
 $router->addRoute('POST', '/admin/articles/uploadimage', 'ArticleController#uploadImage');
 $router->addRoute('POST', '/admin/articles/create', 'ArticleController#create');
 $router->addRoute('POST', '/admin/articles/update/{id}', 'ArticleController#update');
 
-
-
-
+// Panier
+$router->addRoute('POST', '/panier/checkoutsession', 'CheckoutController#postCheckoutSession');
+$router->addRoute('GET', '/panier/checkoutsession', 'CheckoutController#getCheckoutSession');
+$router->addRoute('GET', '/panier/checkoutsessionsuccess', 'CheckoutController#getCheckoutSuccess');
+$router->addRoute('POST', '/panier/confirmation', 'BasketController#confirmation');
+$router->addRoute('POST', '/panier/add', 'BasketController#addTocart');
+$router->addRoute('POST', '/panier/checkConnect', 'BasketController#checkConnect');
+$router->addRoute('POST', '/panier/confirmationBeforePayment', 'CheckoutController#postConfirmationBeforePayment');

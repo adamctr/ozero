@@ -1,54 +1,63 @@
 <?php
 
-class UserController {
+class UserController
+{
+    private $purchaseId;
 
-    public function __construct($userId = null) {
-        if ($userId !== null) {
-            $userModel = new UserModel();
-            $this->user = $userModel->getUserById($userId);
-        }
+    public function __construct($purchaseId = null)
+    {
+        $this->purchaseId = $purchaseId;
     }
-
-    public function update() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->processUpdate(); // Si la méthode est POST, on traite la mise à jour
-        } else {
-            $this->showEditForm(); // Sinon, on affiche le formulaire
-        }
-    }
-
     // Affiche le formulaire d'édition
-    protected function showEditForm() {
-        // Vous pouvez passer $this->user à la vue pour afficher les données de l'utilisateur
-        $view = new EditUserView($this->user);
-        $view->show();
+    public function Profile()
+    {
+        $jwtManager = new JWT();
+        $userId = $jwtManager->getUserIdFromJWT();
+
+        $userModel = new UserModel();
+        $user = $userModel->getUserById($userId);
+
+        $roleModel = new RoleModel();
+        $role = $roleModel->getRoleById($user->getRoleId());
+
+        $addressModel = new AdressesModel();
+        $addresse = $addressModel->getAddressesByUserId($userId);
+        $view = new ProfileView();
+        $view->show($user, $role, $addresse);
     }
 
     // Traite la mise à jour de l'utilisateur
-    protected function processUpdate() {
+    protected function processUpdate()
+    {
         $firstName = $_POST['firstName'] ?? null;
         $lastName = $_POST['lastName'] ?? null;
         $nickName = $_POST['nickName'] ?? null;
         $password = $_POST['password'] ?? null;
-
+        $userId = $_POST['userId'];
         // Validation des champs (par exemple, vérifier que le mail est valide)
 
         // Mise à jour des informations dans la base de données
         $userModel = new UserModel();
-        $userModel->updateUser(
-            $this->user->getUserId(),
+        $user = new UserEntity(
+            $userId,
             $firstName,
             $lastName,
             $nickName,
-            $password
+            null,
+            $password,
+            false,
+            null,
+            $_POST['roleId'] ?? null
         );
+        $userModel->updateUser($user);
 
         // Redirection après la mise à jour
-        header('Location: /user/' . $this->user->getUserId());
+        header('Location: /user/' . $user->getUserId());
         exit();
     }
 
-    public function delete() {
+    public function delete()
+    {
         $rawData = file_get_contents('php://input');
         $data = json_decode($rawData, true);
 
@@ -69,6 +78,56 @@ class UserController {
         } else {
             // Si la suppression échoue, affiche un message d'erreur
             Utils::sendResponse('error', "Une erreur est survenue lors de la suppression de l'utilisateur");
+        }
+    }
+
+    public function getOrders()
+    {
+        try {
+            if (!isset($_COOKIE['auth_token'])) {
+                header('Location: /login');
+            } else {
+                $jwtManager = new JWT();
+                if (!$jwtManager->getUserIdFromJWT()) {
+                    header('Location: /login');
+                } else {
+                    $userId = $jwtManager->getUserIdFromJWT();
+                    $purchaseModel = new PurchaseModel();
+                    $purchases = $purchaseModel->getAllPurchasesById($userId);
+                    $view = new OrderView();
+                    $view->showOrders($purchases);
+                }
+            }
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function getOrderDetails()
+    {
+        try {
+            if (!isset($_COOKIE['auth_token'])) {
+                header('Location: /login');
+            } else {
+                $jwtManager = new JWT();
+                if (!$jwtManager->getUserIdFromJWT()) {
+                    header('Location: /login');
+                } else {
+                    $userId = $jwtManager->getUserIdFromJWT();;
+                    $purchaseModel = new PurchaseModel();
+                    $purchase = $purchaseModel->getPurchaseById($userId, $this->purchaseId);
+                    $purchaseDetailsModel = new PurchaseDetailsModel();
+                    $purchaseDetails = $purchaseDetailsModel->getPurchaseDetailsByPurchaseId($this->purchaseId);
+                    $view = new OrderView();
+                    $view->showOrderDetails($purchase, $purchaseDetails);
+                }
+            }
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
         }
     }
 }

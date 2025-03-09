@@ -1,18 +1,22 @@
 <?php
 
-class AuthController {
+class AuthController
+{
 
-    public function showLoginForm() {
+    public function showLoginForm()
+    {
         $view = new AuthView();
         (new FrontPageView($view->showLoginForm(), "Page de connexion", "Cette page sert pour l'utilisateur afin de se connecter", ['loginRegister']))->show();
     }
 
-    public function showRegisterForm() {
+    public function showRegisterForm()
+    {
         $view = new AuthView();
         (new FrontPageView($view->showRegisterForm(), "Page d'inscription", "Cette page sert pour l'utilisateur afin de s'inscrire au site", ['loginRegister']))->show();
     }
 
-    public function login() {
+    public function login()
+    {
         if (!Utils::isAjax()) {
             Utils::sendResponse('error', 'Erreur lors de la requête AJAX');
             return;
@@ -20,7 +24,7 @@ class AuthController {
 
         $email = trim($_POST['email']) ?? '';
         $password = trim($_POST['password']) ?? '';
-        $remember = trim($_POST['remember']) ?? '';
+        $remember = isset($_POST['remember']) ?? '';
 
         $validation = AuthValidator::login($email, $password);
 
@@ -38,7 +42,8 @@ class AuthController {
             Utils::sendResponse('error', 'Utilisateur non trouvé', true);
         }
     }
-    public function register() {
+    public function register()
+    {
         if (!Utils::isAjax()) {
             Utils::sendResponse('error', 'Erreur lors de la requête AJAX');
             return;
@@ -67,7 +72,8 @@ class AuthController {
         $this->authenticateUser($user);
     }
 
-    public static function logout() {
+    public static function logout()
+    {
         $sessionController = new SessionController();
         $sessionController->logout();
 
@@ -86,7 +92,8 @@ class AuthController {
      * @param UserEntity $user L'utilisateur à authentifier.
      * @param bool $remember Si vrai, le JWT est valide pendant 30 jours, sinon 2 heures.
      */
-    private function authenticateUser(UserEntity $user, $remember = false) {
+    private function authenticateUser(UserEntity $user, $remember = false)
+    {
         // Vérifier si l'utilisateur est valide avant de procéder
         if (!$user->getUserId()) {
             ResponseController::sendResponse('error', "Utilisateur invalide", false, '');

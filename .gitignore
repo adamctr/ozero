@@ -3,3 +3,4 @@ vendor/
 public/uploads/
 .env
 public/style/output.css
+db/

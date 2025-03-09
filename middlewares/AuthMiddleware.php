@@ -54,11 +54,11 @@ class AuthMiddleware
         echo json_encode(['status' => 'error', 'message' => 'Invalid token: ' . $errorMessage]);
     }
 
-    public function seeHeaders() {
+    public function seeHeaders()
+    {
         $headers = getallheaders();
         echo '<pre>';
         print_r($headers);
         echo '</pre>';
-
     }
 }

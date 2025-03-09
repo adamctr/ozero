@@ -40,7 +40,6 @@ class Migrations
     public function migrate()
     {
         (new CreateProductImagesTable())->migrate();
-        (new addTypeColumnToArticle())->migrate();
-
+        (new AddTypeColumnToArticle())->migrate();
     }
 }

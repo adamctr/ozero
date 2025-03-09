@@ -1,10 +1,12 @@
 <?php
 
-class SessionController {
+class SessionController
+{
 
     protected $jwtHandler;
 
-    public function __construct() {
+    public function __construct()
+    {
         // Utiliser le gestionnaire de JWT
         $this->jwtHandler = new JWT();
 
@@ -15,7 +17,8 @@ class SessionController {
     }
 
     // Méthode pour récupérer l'ID de l'utilisateur depuis le JWT
-    public function getUserId() {
+    public function getUserId()
+    {
         try {
             return $this->jwtHandler->getUserIdFromJWT();
         } catch (Exception $e) {
@@ -24,7 +27,8 @@ class SessionController {
     }
 
     // Méthode pour vérifier si l'utilisateur est connecté (en vérifiant si le JWT est valide)
-    public function isLoggedIn() {
+    public function isLoggedIn()
+    {
         try {
             return $this->jwtHandler->getUserIdFromJWT() !== null;
         } catch (Exception $e) {
@@ -33,7 +37,8 @@ class SessionController {
     }
 
     // Méthode pour récupérer le rôle de l'utilisateur
-    public function getRole() {
+    public function getRole()
+    {
         $userId = $this->getUserId();
         if (!$userId) {
             return null;
@@ -42,11 +47,12 @@ class SessionController {
         // Récupérer le rôle de l'utilisateur depuis la base de données
         $userModel = new UserModel();
         $user = $userModel->getUserById($userId);
-        return $user->getRole();
+        return $user->getRoleId();
     }
 
     // Méthode pour récupérer le nom d'utilisateur depuis le JWT
-    public function getName() {
+    public function getName()
+    {
         try {
             if (!isset($_COOKIE['auth_token'])) {
                 return null;
@@ -59,7 +65,8 @@ class SessionController {
     }
 
     // Méthode pour récupérer le prénom d'utilisateur depuis le JWT
-    public function getFirstName() {
+    public function getFirstName()
+    {
         try {
             if (!isset($_COOKIE['auth_token'])) {
                 return null;
@@ -72,7 +79,8 @@ class SessionController {
     }
 
     // Méthode pour récupérer le nom de famille de l'utilisateur depuis le JWT
-    public function getLastName() {
+    public function getLastName()
+    {
         try {
             if (!isset($_COOKIE['auth_token'])) {
                 return null;
@@ -85,7 +93,8 @@ class SessionController {
     }
 
     // Méthode pour se déconnecter (effacer le cookie JWT et le token CSRF)
-    public function logout() {
+    public function logout()
+    {
         // Supprimer le cookie JWT
         setcookie('auth_token', '', time() - 3600, '/');
         // Supprimer le CSRF Token de la session
@@ -93,7 +102,8 @@ class SessionController {
     }
 
     // Méthode pour générer ou récupérer le CSRF Token
-    public static function getCSRFToken() {
+    public static function getCSRFToken()
+    {
         if (!isset($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
@@ -101,8 +111,8 @@ class SessionController {
     }
 
     // Méthode pour vérifier le CSRF Token fourni
-    public static function verifyCSRFToken($token) {
+    public static function verifyCSRFToken($token)
+    {
         return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
     }
 }
-?>

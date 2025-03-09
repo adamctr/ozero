@@ -1,14 +1,17 @@
 <?php
 
-class ProductController {
+class ProductController
+{
 
     protected $productModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->productModel = new ProductModel();
     }
 
-    public function addProduct() {
+    public function addProduct()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $validation = ProductValidator::validate($_POST['product'], $_POST['description'], $_POST['price'], $_POST['stock'], $_FILES['images']);
 
@@ -23,6 +26,7 @@ class ProductController {
             $stock = (int)$_POST['stock'];
             $imagePaths = [];
 
+
             // Gestion de l'upload des images multiples
             if (!empty($_FILES['images']['name'][0])) {
                 $imagePaths = $this->handleMultipleImageUpload($_FILES['images']);
@@ -36,6 +40,11 @@ class ProductController {
             $productId = $this->productModel->addProduct($product, $description, $price, '', $stock);
 
             if ($productId) {
+                $stripeAddProduct = \Stripe\Price::create([
+                    'product' => $productId,
+                    'unit_amount' => $price, // Montant en centimes (2000 = 20.00 USD)
+                    'currency' => 'eur',
+                ]);
                 // Enregistre les images dans la table des images
                 foreach ($imagePaths as $path) {
                     $this->productModel->addProductImages($productId, $path);
@@ -47,7 +56,8 @@ class ProductController {
         }
     }
 
-    public function deleteImage() {
+    public function deleteImage()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = json_decode(file_get_contents('php://input'), true);
 
@@ -77,7 +87,8 @@ class ProductController {
         }
     }
 
-    public function updateProduct() {
+    public function updateProduct()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Récupérer les données du formulaire
             $productId = $_POST['productId'] ?? null;
@@ -123,7 +134,8 @@ class ProductController {
         }
     }
 
-    public function deleteProduct() {
+    public function deleteProduct()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $data = json_decode(file_get_contents('php://input'), true);
 
@@ -163,8 +175,8 @@ class ProductController {
         }
     }
 
-
-    private function handleMultipleImageUpload($files) {
+    private function handleMultipleImageUpload($files)
+    {
         // Extensions autorisées pour les images
         $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
         $maxSize = 2 * 1024 * 1024; // Taille maximale de fichier 2MB
@@ -210,7 +222,6 @@ class ProductController {
                 return;
             }
         }
-
         return $imagePaths;
     }
 }

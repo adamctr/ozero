@@ -70,10 +70,9 @@ class UserModel
         $mail = $userEntity->getMail();
         $password = $userEntity->getPassword();
         $verified = 0;
-        $roleId = 3;
+        $roleId = $userEntity->getRoleId() ?? 1;
 
         // Debug pour vérifier les valeurs
-
         // Préparer la requête
         $stmt = $this->db->prepare("INSERT INTO users (firstName, lastName, nickName, mail, password, verified, roleId) 
         VALUES (:firstName, :lastName, :nickName, :mail, :password, :verified, :roleId)");
@@ -102,6 +101,7 @@ class UserModel
         $firstName = $userEntity->getFirstName();
         $lastName = $userEntity->getLastName();
         $nickName = $userEntity->getNickName();
+        $mail = $userEntity->getMail();
         $password = $userEntity->getPassword();
         $verified = $userEntity->isVerified();
         $roleId = $userEntity->getRoleId();
@@ -115,6 +115,7 @@ class UserModel
         $stmt->bindParam(':firstName', $firstName, \PDO::PARAM_STR);
         $stmt->bindParam(':lastName', $lastName, \PDO::PARAM_STR);
         $stmt->bindParam(':nickName', $nickName, \PDO::PARAM_STR);
+        $stmt->bindParam(':mail', $mail, \PDO::PARAM_STR);
         $stmt->bindParam(':password', $password, \PDO::PARAM_STR);
         $stmt->bindParam(':verified', $verified, \PDO::PARAM_BOOL);
         $stmt->bindParam(':roleId', $roleId, \PDO::PARAM_INT);
@@ -179,5 +180,4 @@ class UserModel
 
         return $userEntities;
     }
-
 }
